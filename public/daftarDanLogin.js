@@ -32,7 +32,7 @@
       const nisn = document.getElementById('loginNisn').value;
       const password = document.getElementById('loginPassword').value;
       
-      const user = users.find(u => u.nisn === nisn);
+      const user = `users`.find(u => u.nisn === nisn);
       if (!user) {
         showError('loginError', 'NISN tidak ditemukan');
         return;
