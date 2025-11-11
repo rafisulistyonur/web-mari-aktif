@@ -8,38 +8,206 @@
     <link rel="stylesheet" href="/public/utama.css">
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-left">
                 <a href="#" class="logo">Mari Aktif</a>
                 
                 <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="fas fa-home"></i>
-                            <span>Beranda</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-comments"></i>
-                            <span>Forum</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-bullhorn"></i>
-                            <span>Lowongan</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-trophy"></i>
-                            <span>Aktivitas</span>
-                        </a>
-                    </li>
+                    <li><a href="#" class="nav-link active"><i class="fas fa-home"></i><span>Beranda</span></a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-comments"></i><span>Forum</span></a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-bullhorn"></i><span>Lowongan</span></a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-trophy"></i><span>Aktivitas</span></a></li>
                 </ul>
             </div>
+
+            <div class="nav-right">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Cari di Mari Aktif">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                    <div class="profile-btn"><i class="fas fa-user"></i></div>
+                </div>
+
+                <button class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Tambah Pertanyaan
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar Profile -->
+        <aside class="sidebar">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="profile-edit-icon" onclick="openEditModal()">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-body">
+                    <div class="profile-name" id="profileName">Rayhan Nurindra</div>
+                    <div class="profile-title" id="profileTitle">Leader & Public Speaker Since 2023</div>
+                    <div class="profile-location" id="profileLocation">Madiun, Jawa Timur</div>
+                    <div class="profile-school">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span id="profileSchool">SMA Negeri 2 Madiun</span>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-label">Koneksi</div>
+                            <div class="stat-value">4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">
+                    <i class="fas fa-bookmark"></i> Item yang disimpan
+                </div>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Item yang disimpan</span>
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-users"></i>
+                    <span>Grup</span>
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Buletin</span>
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-calendar"></i>
+                    <span>Acara</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Feed -->
+        <main class="feed">
+            <!-- Post Creator -->
+            <div class="post-creator">
+                <div class="post-input-area">
+                    <div class="post-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="post-input-wrapper">
+                        <input type="text" class="post-input" placeholder="Mulai buat posting" id="postInputTrigger">
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="post-action-btn video">
+                        <i class="fas fa-video"></i>
+                        <span>Video</span>
+                    </button>
+                    <button class="post-action-btn photo">
+                        <i class="fas fa-image"></i>
+                        <span>Foto</span>
+                    </button>
+                    <button class="post-action-btn article">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Tulis artikel</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Posts Container -->
+            <div id="postsContainer">
+                <!-- Sample Post -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-author-info">
+                            <div class="post-author-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="post-author-details">
+                                <h3>Nur Muhammad Ainul Yaqin</h3>
+                                <div class="post-author-meta">menyukai ini</div>
+                            </div>
+                        </div>
+                        <button class="post-menu-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    <div class="post-content">
+                        <p>hampir setiap orang aku tanyain cita-citamu apa, pasti jawabannya</p>
+                        <p>"yaa sebenernya aku pingin bisnis sih" ...selengkapnya</p>
+                    </div>
+                    <div class="post-actions-bar">
+                        <button class="post-action">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>Suka</span>
+                        </button>
+                        <button class="post-action">
+                            <i class="fas fa-comment"></i>
+                            <span>Komentar</span>
+                        </button>
+                        <button class="post-action">
+                            <i class="fas fa-share"></i>
+                            <span>Bagikan</span>
+                        </button>
+                        <button class="post-action">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Kirim</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Profil</h2>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nama</label>
+                <input type="text" class="form-input" id="editName" value="Rayhan Nurindra">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul</label>
+                <input type="text" class="form-input" id="editTitle" value="Leader & Public Speaker Since 2023">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lokasi</label>
+                <input type="text" class="form-input" id="editLocation" value="Madiun, Jawa Timur">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sekolah</label>
+                <input type="text" class="form-input" id="editSchool" value="SMA Negeri 2 Madiun">
+            </div>
+            <button class="btn-primary" onclick="saveProfile()">Simpan</button>
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Buat Postingan</h2>
+                <button class="modal-close" onclick="closePostModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Apa yang ingin Anda bagikan?</label>
+                <textarea class="form-input" id="postContent" rows="4" placeholder="Tulis sesuatu..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="createPost()">Posting</button>
+        </div>
+    </div>
 
             <div class="nav-right">
                 <div class="search-box">
