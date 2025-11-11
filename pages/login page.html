@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lomba App</title>
+  <link rel="stylesheet" href="/public/daftarDanLogin.css"/>
+</head>
+<body>
+  <div id="loginPage" class="auth-page">
+    <div class="auth-card">
+      <h1>Masuk</h1>
+      <div id="loginError" class="alert hidden"></div>
+      <form id="loginForm">
+        <label>NISN</label>
+        <input type="text" id="loginNisn" required placeholder="Masukkan NISN">
+        <label>Password</label>
+        <input type="password" id="loginPassword" required placeholder="Password">
+        <button class="btn" type="submit">Masuk</button>
+      </form>
+      <p class="muted">Belum punya akun? <a href="/daftar">Daftar</a></p>
+    </div>
+    <div class="auth-illustration">
+      <h2>Selamat datang</h2>
+      <p>Masuk untuk melihat lowongan lomba dan tambahkan lombamu sendiri.</p>
+    </div>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div id="dashboardPage" class="hidden">
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">Lomba App</div>
+        <div class="right">
+          <div class="greeting">Halo, <strong id="userName">Pengguna</strong></div>
+          <a class="btn ghost" href="#" id="logoutBtn">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main-grid">
+      <section class="create-card">
+        <h2>Tambah Lomba</h2>
+        <form id="addLombaForm" class="form-inline">
+          <input id="namaLomba" placeholder="Nama Lomba" required>
+          <input id="deskripsi" placeholder="Deskripsi singkat" required>
+          <input id="link" placeholder="Link pendaftaran (https://...)" required>
+          <button class="btn" type="submit">Tambah</button>
+        </form>
+      </section>
+
+      <section class="feed" id="lombaFeed">
+        <div class="empty">Belum ada lomba. Tambahkan yang pertama!</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/public/daftarDanLogin.js"></script>
+</body>
+</html>
