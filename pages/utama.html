@@ -177,47 +177,7 @@
             <button class="btn-primary" onclick="createPost()">Posting</button>
         </div>
     </div>
-<<<<<<< HEAD
-
-            <div class="nav-right">
-                <div class="search-box">
-                    <input type="text" class="search-input" placeholder="Cari di Mari Aktif">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-
-                <div class="nav-icons">
-                    <button class="icon-btn">
-                        <i class="fas fa-bell"></i>
-
-                </button>
-            </div>
-        </div>
-    </nav>
 
     <script src="/public/topNavigasi.js"></script>
-=======
-    <script>
-        // Add active state on click
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Search functionality demo
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                alert('Mencari: ' + this.value);
-            }
-        });
-
-        // Add question button
-        document.querySelector('.add-btn').addEventListener('click', function() {
-            alert('Fitur tambah pertanyaan akan dibuka');
-        });
-    </script>
->>>>>>> 55521ee154efed8737a7773451b8d28bfc616059
 </body>
 </html>

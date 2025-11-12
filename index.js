@@ -69,9 +69,13 @@ app.get("/login", (req, res) => {
 });
 
 // Protected route - hanya bisa diakses jika sudah login
-app.get("/pertemanan", isAuthenticated, (req, res) => {
+app.get("/pertemanan", (req, res) => {
     res.send(prosesHalaman('pertemanan'));
 });
+
+app.get("/lowongan", (req, res) => {
+    res.send(prosesHalaman('lowongan'))
+})
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
