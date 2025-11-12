@@ -1,7 +1,35 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const User = require("./skema/user.js");
 
 const route = express.Router();
+
+// Secret key untuk JWT (sebaiknya di environment variable)
+const JWT_SECRET = process.env.JWT_SECRET || "lomba-secret-key-change-this-in-production";
+
+// Middleware untuk verifikasi JWT
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Bearer TOKEN
+    
+    if (!token) {
+        return res.status(401).json({ 
+            success: false, 
+            message: "Token tidak ditemukan" 
+        });
+    }
+    
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.userId = decoded.userId;
+        req.username = decoded.username;
+        next();
+    } catch (error) {
+        return res.status(401).json({ 
+            success: false, 
+            message: "Token tidak valid" 
+        });
+    }
+};
 
 // Route test
 route.get("/", (req, res) => {
@@ -11,44 +39,66 @@ route.get("/", (req, res) => {
 // Register user baru
 route.post("/register", async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, nisn, password } = req.body;
 
         // Validasi input
-        if (!username || !email || !password) {
+        if (!username || !nisn || !password) {
             return res.status(400).json({ 
                 success: false, 
                 message: "Semua field harus diisi" 
             });
         }
 
-        // Cek apakah user sudah ada
-        const existingUser = await User.findOne({ 
-            $or: [{ email }, { username }] 
-        });
-
-        if (existingUser) {
+        // Validasi panjang password
+        if (password.length < 6) {
             return res.status(400).json({ 
                 success: false, 
-                message: "Username atau email sudah digunakan" 
+                message: "Password minimal 6 karakter" 
             });
         }
 
+        // Cek apakah user sudah ada
+        const existingUser = await User.findOne({ 
+            $or: [{ nisn }, { username }] 
+        });
+
+        
+        if (existingUser) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Username atau NISN sudah digunakan" 
+            });
+        }
+        
+        
         // Buat user baru
         const user = new User({
             username,
-            email,
+            nisn,
             password
         });
-
+        
         await user.save();
+        console.log("buat user baru");
+        // Generate JWT token
+        const token = jwt.sign(
+            { 
+                userId: user._id, 
+                username: user.username,
+                nisn: user.nisn
+            }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
 
         res.status(201).json({ 
             success: true, 
             message: "Registrasi berhasil",
+            token,
             user: {
                 id: user._id,
                 username: user.username,
-                email: user.email
+                nisn: user.nisn
             }
         });
 
@@ -74,9 +124,9 @@ route.post("/login", async (req, res) => {
             });
         }
 
-        // Cari user berdasarkan username atau email
+        // Cari user berdasarkan username atau nisn
         const user = await User.findOne({
-            $or: [{ username }, { email: username }]
+            $or: [{ username }, { nisn: username }]
         });
 
         if (!user) {
@@ -96,17 +146,25 @@ route.post("/login", async (req, res) => {
             });
         }
 
-        // Simpan session
-        req.session.userId = user._id;
-        req.session.username = user.username;
+        // Generate JWT token
+        const token = jwt.sign(
+            { 
+                userId: user._id, 
+                username: user.username,
+                nisn: user.nisn
+            }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
 
         res.json({ 
             success: true, 
             message: "Login berhasil",
+            token,
             user: {
                 id: user._id,
                 username: user.username,
-                email: user.email
+                nisn: user.nisn
             }
         });
 
@@ -119,39 +177,81 @@ route.post("/login", async (req, res) => {
     }
 });
 
-// Logout user
+// Logout user (client-side akan menghapus token)
 route.post("/logout", (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Gagal logout" 
-            });
-        }
-        res.json({ 
-            success: true, 
-            message: "Logout berhasil" 
-        });
+    res.json({ 
+        success: true, 
+        message: "Logout berhasil" 
     });
 });
 
-// Cek status login
-route.get("/check-auth", (req, res) => {
-    if (req.session.userId) {
+// Cek status login dengan JWT
+route.get("/check-auth", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select('-password');
+        
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                isAuthenticated: false,
+                message: "User tidak ditemukan"
+            });
+        }
+
         res.json({ 
             success: true, 
             isAuthenticated: true,
             user: {
-                id: req.session.userId,
-                username: req.session.username
+                id: user._id,
+                username: user.username,
+                nisn: user.nisn
             }
         });
-    } else {
-        res.json({ 
-            success: true, 
-            isAuthenticated: false 
+    } catch (error) {
+        console.error('Check auth error:', error);
+        res.status(500).json({ 
+            success: false, 
+            isAuthenticated: false,
+            message: "Terjadi kesalahan server" 
         });
     }
 });
 
-module.exports = route; 
+// Get user profile (contoh protected route)
+route.get("/profile", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User tidak ditemukan" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            user: {
+                id: user._id,
+                username: user.username,
+                nisn: user.nisn
+            }
+        });
+    } catch (error) {
+        console.error('Profile error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Logout user (client-side akan menghapus token)
+route.post("/logout", (req, res) => {
+    res.json({ 
+        success: true, 
+        message: "Logout berhasil" 
+    });
+});
+
+module.exports = route;
