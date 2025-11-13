@@ -50,6 +50,11 @@
         if (userNameElement) {
             userNameElement.textContent = user.username;
         }
+
+        const nisnElement = document.getElementById('userNisn');
+        if (nisnElement) {
+            nisnElement.textContent = user.nisn;
+        }
     }
 
     // Handle logout button jika ada
