@@ -4,6 +4,67 @@
             box-sizing: border-box;
         }
 
+        /* Toast Notifications */
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .toast-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .toast-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .toast i {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: #f1f2f2;
@@ -378,4 +439,364 @@
 
         .btn-delete:hover {
             background-color: #e0e0e0;
+        }
+
+        /* Tab System */
+        .tabs-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .tab-button.active {
+            color: #2777b9;
+            border-bottom-color: #2777b9;
+        }
+
+        .tabs-content {
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-box-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #friendSearchInput {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #friendSearchInput:focus {
+            border-color: #2777b9;
+        }
+
+        .btn-search {
+            background-color: #2777b9;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-search:hover {
+            background-color: #1e5f8c;
+        }
+
+        /* Friend Cards Grid */
+        #searchResultsContainer,
+        #incomingRequestsContainer,
+        #friendsListContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Friend Card - New Style */
+        .friend-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .friend-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .friend-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2777b9, #1e5f8c);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .friend-details {
+            flex: 1;
+        }
+
+        .friend-username {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            margin-bottom: 4px;
+        }
+
+        .friend-nisn {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .friend-action {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-add {
+            background-color: #2777b9;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background-color: #1e5f8c;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-pending {
+            background-color: #ffc107;
+            color: #333;
+            cursor: not-allowed;
+        }
+
+        .btn-received {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-received:hover {
+            background-color: #138496;
+        }
+
+        .btn-friend {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .btn-blocked {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Request Card */
+        .request-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffc107;
+        }
+
+        .request-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .request-details {
+            flex: 1;
+        }
+
+        .request-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .request-details p {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+
+        .text-muted {
+            color: #666;
+        }
+
+        .text-small {
+            font-size: 12px;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Empty Search State */
+        .empty-search-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-search-state i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .tabs-header {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                flex: 1 1 auto;
+                padding: 12px 15px;
+                font-size: 12px;
+            }
+
+            .friend-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .friend-action {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .search-box-container {
+                flex-direction: column;
+            }
+
+            .btn-search {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #friendSearchInput {
+                width: 100%;
+            }
+
+            .request-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .request-actions {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .request-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
         }

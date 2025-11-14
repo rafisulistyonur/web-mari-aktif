@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const route = require('./api.js');
+const friendshipRoute = require('./friendshipApi.js');
 const connectDB = require('./database');
 const fs = require('fs');
 const path = require('path');
@@ -53,6 +54,7 @@ function injectAuthScript(html) {
 
 // API routes
 app.use("/api", route);
+app.use("/api/friendship", friendshipRoute);
 
 // Public files
 app.get('/public/:file', (req, res) => {

@@ -17,21 +17,17 @@
             <div class="sidebar-card">
                 <div class="sidebar-header">Teman</div>
                 <ul class="sidebar-menu">
-                    <li class="sidebar-menu-item">
-                        <i class="fas fa-user-friends" style="color: #2777b9;"></i>
-                        <span>Beranda</span>
-                    </li>
-                    <li class="sidebar-menu-item active">
+                    <li class="sidebar-menu-item" onclick="switchTab('requests')">
                         <i class="fas fa-user-plus" style="color: #2777b9;"></i>
                         <span>Permintaan Pertemanan</span>
                         <i class="fas fa-chevron-right arrow"></i>
                     </li>
-                    <li class="sidebar-menu-item">
-                        <i class="fas fa-user-check" style="color: #666;"></i>
-                        <span>Saran</span>
+                    <li class="sidebar-menu-item" onclick="switchTab('find-friends')">
+                        <i class="fas fa-search" style="color: #666;"></i>
+                        <span>Temukan Teman</span>
                         <i class="fas fa-chevron-right arrow"></i>
                     </li>
-                    <li class="sidebar-menu-item">
+                    <li class="sidebar-menu-item" onclick="switchTab('friends')">
                         <i class="fas fa-users" style="color: #666;"></i>
                         <span>Semua Teman</span>
                         <i class="fas fa-chevron-right arrow"></i>
@@ -42,29 +38,55 @@
 
         <!-- Content Area -->
         <main class="content-area">
-            <div class="page-header">
-                <h1 class="page-title">Permintaan Pertemanan</h1>
-                <a href="#" class="view-all-link">Lihat Semua</a>
-            </div>
-
-            <!-- Empty State -->
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fas fa-user-friends"></i>
+            <!-- Tabs Container -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-button active" onclick="switchTab('requests')">
+                        <i class="fas fa-user-plus"></i> Permintaan Pertemanan
+                    </button>
+                    <button class="tab-button" onclick="switchTab('find-friends')">
+                        <i class="fas fa-search"></i> Temukan Teman
+                    </button>
+                    <button class="tab-button" onclick="switchTab('friends')">
+                        <i class="fas fa-users"></i> Semua Teman
+                    </button>
                 </div>
-                <h2 class="empty-state-title">Belum Ada Permintaan Pertemanan</h2>
-                <p class="empty-state-text">
-                    Saat seseorang mengirimkan permintaan pertemanan kepada Anda,<br>
-                    permintaan tersebut akan muncul di sini.
-                </p>
-                <button class="empty-state-btn" onclick="findFriends()">
-                    <i class="fas fa-search"></i> Temukan Teman
-                </button>
+
+                <div class="tabs-content">
+                    <!-- Tab 1: Permintaan Pertemanan -->
+                    <div id="requests-tab" class="tab-content active">
+                        <div id="incomingRequestsContainer"></div>
+                    </div>
+
+                    <!-- Tab 2: Temukan Teman -->
+                    <div id="find-friends-tab" class="tab-content">
+                        <div class="search-section">
+                            <div class="search-box-container">
+                                <input 
+                                    type="text" 
+                                    id="friendSearchInput" 
+                                    placeholder="Cari teman berdasarkan nama atau NISN..."
+                                    onkeypress="if(event.key === 'Enter') searchFriends()"
+                                />
+                                <button class="btn-search" onclick="searchFriends()">
+                                    <i class="fas fa-search"></i> Cari
+                                </button>
+                            </div>
+                        </div>
+                        <div id="searchResultsContainer"></div>
+                    </div>
+
+                    <!-- Tab 3: Semua Teman -->
+                    <div id="friends-tab" class="tab-content">
+                        <div id="friendsListContainer"></div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
     <script src="/public/protected-page.js"></script>
     <script src="/public/topNavigasi.js"></script>
+    <script src="/public/pertemanan.js"></script>
 </body>
 </html>
