@@ -30,51 +30,52 @@ function renderLomba() {
     grid.innerHTML = lombaData.map(lomba => {
         const expiredDate = new Date(lomba.tanggalExpired).toISOString().split('T')[0];
         const isExpired = expiredDate < today;
-        const statusBadge = isExpired 
-            ? '<div class="expired-badge">EXPIRED</div>'
-            : '<div class="active-badge">AKTIF</div>';
+        const statusClass = isExpired ? 'status-inactive' : 'status-active';
+        const statusText = isExpired ? 'EXPIRED' : 'AKTIF';
         
         return `
             <div class="lomba-card">
-                ${statusBadge}
-                <div class="lomba-kategori">${lomba.kategori}</div>
-                <h3>${lomba.nama}</h3>
-                <p>${lomba.deskripsi}</p>
+                <div class="lomba-card-header">
+                    <h3>${lomba.nama}</h3>
+                    <div class="lomba-card-kategori">${lomba.kategori}</div>
+                </div>
                 
-                <div class="lomba-info">
-                    <div class="lomba-info-item">
-                        <strong>Penyelenggara:</strong>
-                        <span>${lomba.penyelenggara}</span>
+                <div class="lomba-card-body">
+                    <div class="lomba-info">
+                        <div class="lomba-info-label">Penyelenggara</div>
+                        <div class="lomba-info-value">${lomba.penyelenggara}</div>
                     </div>
-                    <div class="lomba-info-item">
-                        <strong>Lokasi:</strong>
-                        <span>${lomba.lokasi}</span>
+                    
+                    <div class="lomba-info">
+                        <div class="lomba-info-label">Lokasi</div>
+                        <div class="lomba-info-value">${lomba.lokasi}</div>
                     </div>
-                    <div class="lomba-info-item">
-                        <strong>Expired:</strong>
-                        <span>${formatDate(lomba.tanggalExpired)}</span>
+                    
+                    <div class="lomba-info">
+                        <div class="lomba-info-label">Deskripsi</div>
+                        <div class="lomba-info-value">${lomba.deskripsi}</div>
                     </div>
-                    <div class="lomba-info-item">
-                        <strong>Hadiah:</strong>
-                        <span>${lomba.hadiah}</span>
+                    
+                    <div class="lomba-info">
+                        <div class="lomba-info-label">Tanggal Expired</div>
+                        <div class="lomba-info-value">${formatDate(lomba.tanggalExpired)}</div>
                     </div>
-                    <div class="lomba-info-item">
-                        <strong>Persyaratan:</strong>
-                        <span>${lomba.persyaratan}</span>
-                    </div>
-                    <div class="lomba-info-item">
-                        <strong>Link Kontak:</strong>
-                        <span><a href="${lomba.linkKontak}" target="_blank">Hubungi</a></span>
-                    </div>
-                    <div class="lomba-info-item">
-                        <strong>Pendaftaran:</strong>
-                        <span><a href="${lomba.linkPendaftaran}" target="_blank">Daftar</a></span>
+                    
+                    <div class="lomba-info">
+                        <div class="lomba-info-label">Status</div>
+                        <div class="lomba-info-value">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="lomba-actions">
-                    <button class="btn btn-edit" onclick="editLomba('${lomba._id}')">✏️ Edit</button>
-                    <button class="btn btn-delete" onclick="deleteLomba('${lomba._id}')">🗑️ Hapus</button>
+                
+                <div class="lomba-card-footer">
+                    <button class="btn btn-primary btn-small" onclick="editLomba('${lomba._id}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger btn-small" onclick="deleteLomba('${lomba._id}')">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
                 </div>
             </div>
         `;

@@ -4,13 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Mari Aktif Lomba</title>
-    <link rel="stylesheet" href="/public/lombainteraktif.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/public/admin-style.css">
 </head>
 <body>
-    <div class="container">
+    <!-- Navbar Admin -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="logo" style="width: 150px; font-size: 26px; text-align: center;">Mari Aktif</a>
+
+                <ul class="nav-menu">
+                    <li><a href="/admin" class="nav-link active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-users"></i><span>Users</span></a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-chart-bar"></i><span>Laporan</span></a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-cog"></i><span>Pengaturan</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-right">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                    <div class="profile-btn"><i class="fas fa-user"></i></div>
+                </div>
+
+                <button class="add-btn" id="logoutBtn"><i class="fas fa-sign-out"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="admin-container">
         <!-- Header -->
-        <div class="header">
-            <h1>🎯 Admin Panel - Mari Aktif</h1>
+        <div class="admin-header">
+            <h1><i class="fas fa-cogs"></i> Admin Panel - Mari Aktif</h1>
             <p>Kelola Data Lomba dan Kompetisi</p>
         </div>
 
@@ -20,7 +47,7 @@
                 <strong>Total Lomba: <span id="totalLomba">0</span></strong>
             </div>
             <button class="btn btn-primary" onclick="openModal()">
-                ➕ Tambah Lomba Baru
+                <i class="fas fa-plus"></i> Tambah Lomba Baru
             </button>
         </div>
 
@@ -33,7 +60,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalTitle">Tambah Lomba Baru</h2>
-                <button class="close-btn" onclick="closeModal()">✕</button>
+                <button class="close-btn" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
                 <form id="lombaForm">
@@ -104,13 +131,14 @@
 
                     <div class="form-footer">
                         <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
-                        <button type="submit" class="btn btn-success">💾 Simpan</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <script src="/public/protected-page.js"></script>
     <script src="/public/programlomba.js"></script>
 </body>
 </html>
