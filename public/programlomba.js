@@ -1,37 +1,26 @@
 let lombaData = [];
 let editingId = null;
 
-// Inisialisasi data contoh
+// Inisialisasi - ambil data dari database
 function initData() {
-    lombaData = [
-        {
-            id: 1,
-            nama: 'Olimpiade Matematika Nasional',
-            deskripsi: 'Kompetisi matematika tingkat nasional untuk siswa SMA/SMK',
-            penyelenggara: 'Universitas Indonesia',
-            lokasi: 'Jakarta (Online)',
-            tanggalExpired: '2025-11-14',
-            kategori: 'Matematika',
-            hadiah: 'Piala, Sertifikat, Uang Pembinaan Rp 10.000.000',
-            persyaratan: 'Siswa SMA/SMK sederajat, Melampirkan kartu pelajar',
-            linkKontak: 'https://wa.me/628123456789',
-            linkPendaftaran: 'https://olimpiade.ui.ac.id/daftar'
-        },
-        {
-            id: 2,
-            nama: 'Kompetisi Fisika Tingkat Nasional',
-            deskripsi: 'Ajang kompetisi fisika untuk pelajar berbakat',
-            penyelenggara: 'Kementerian Pendidikan',
-            lokasi: 'Jawa Barat (Di Kampus)',
-            tanggalExpired: '2025-11-13',
-            kategori: 'Fisika',
-            hadiah: 'Medali Emas, Sertifikat, Beasiswa',
-            persyaratan: 'Siswa SMA kelas 10-12, Rekomendasi sekolah',
-            linkKontak: 'https://wa.me/628987654321',
-            linkPendaftaran: 'https://fisika.kemdikbud.go.id'
+    loadLombaDariDatabase();
+}
+
+// Ambil data lowongan dari database
+async function loadLombaDariDatabase() {
+    try {
+        const response = await fetch('/api/lowongan');
+        const result = await response.json();
+        
+        if (result.success) {
+            lombaData = result.lowongan;
+            renderLomba();
+        } else {
+            console.error('Error loading lomba:', result.message);
         }
-    ];
-    renderLomba();
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 function renderLomba() {
@@ -39,7 +28,8 @@ function renderLomba() {
     const today = new Date().toISOString().split('T')[0];
     
     grid.innerHTML = lombaData.map(lomba => {
-        const isExpired = lomba.tanggalExpired < today;
+        const expiredDate = new Date(lomba.tanggalExpired).toISOString().split('T')[0];
+        const isExpired = expiredDate < today;
         const statusBadge = isExpired 
             ? '<div class="expired-badge">EXPIRED</div>'
             : '<div class="active-badge">AKTIF</div>';
@@ -83,8 +73,8 @@ function renderLomba() {
                 </div>
 
                 <div class="lomba-actions">
-                    <button class="btn btn-edit" onclick="editLomba(${lomba.id})">✏️ Edit</button>
-                    <button class="btn btn-delete" onclick="deleteLomba(${lomba.id})">🗑️ Hapus</button>
+                    <button class="btn btn-edit" onclick="editLomba('${lomba._id}')">✏️ Edit</button>
+                    <button class="btn btn-delete" onclick="deleteLomba('${lomba._id}')">🗑️ Hapus</button>
                 </div>
             </div>
         `;
@@ -112,7 +102,7 @@ function closeModal() {
 }
 
 function editLomba(id) {
-    const lomba = lombaData.find(l => l.id === id);
+    const lomba = lombaData.find(l => l._id === id);
     if (!lomba) return;
 
     editingId = id;
@@ -123,7 +113,7 @@ function editLomba(id) {
     form.deskripsi.value = lomba.deskripsi;
     form.penyelenggara.value = lomba.penyelenggara;
     form.lokasi.value = lomba.lokasi;
-    form.tanggalExpired.value = lomba.tanggalExpired;
+    form.tanggalExpired.value = new Date(lomba.tanggalExpired).toISOString().split('T')[0];
     form.kategori.value = lomba.kategori;
     form.hadiah.value = lomba.hadiah;
     form.persyaratan.value = lomba.persyaratan;
@@ -135,28 +125,74 @@ function editLomba(id) {
 
 function deleteLomba(id) {
     if (confirm('Apakah Anda yakin ingin menghapus lomba ini?')) {
-        lombaData = lombaData.filter(l => l.id !== id);
-        renderLomba();
+        deleteFromDatabase(id);
     }
 }
 
-document.getElementById('lombaForm').addEventListener('submit', function(e) {
+document.getElementById('lombaForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    if (editingId) {
-        const index = lombaData.findIndex(l => l.id === editingId);
-        lombaData[index] = { ...data, id: editingId };
-    } else {
-        data.id = Date.now();
-        lombaData.push(data);
-    }
+    try {
+        let response;
+        
+        if (editingId) {
+            // Update existing
+            response = await fetch(`/api/lowongan/${editingId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Create new
+            response = await fetch('/api/lowongan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+        }
 
-    renderLomba();
-    closeModal();
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            loadLombaDariDatabase();
+            closeModal();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menyimpan');
+    }
 });
+
+// Fungsi untuk menghapus dari database
+async function deleteFromDatabase(id) {
+    try {
+        const response = await fetch(`/api/lowongan/${id}`, {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            loadLombaDariDatabase();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menghapus');
+    }
+}
 
 // Inisialisasi saat halaman dimuat
 initData();
