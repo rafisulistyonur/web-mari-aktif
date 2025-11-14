@@ -1,129 +1,70 @@
-const competitions = {
-    1: {
-        title: "Olimpiade Matematika Nasional",
-        organizer: "Universitas Indonesia",
-        logo: "🔢",
-        logoColor: "#3b82f6",
-        location: "Jakarta (Online)",
-        deadline: "2 minggu yang lalu",
-        applicants: "150+ peserta",
-        category: "Matematika",
-        categoryFilter: "matematika",
-        prize: "Total hadiah IDR 15.000.000",
-        status: "",
-        recruiter: null
-    },
-    2: {
-        title: "Kompetisi Fisika Tingkat Nasional",
-        organizer: "Kementerian Pendidikan",
-        logo: "⚛️",
-        logoColor: "#8b5cf6",
-        location: "Area Jawa Barat (Di Kampus)",
-        deadline: "1 minggu yang lalu",
-        applicants: "200+ peserta",
-        category: "Fisika",
-        categoryFilter: "fisika",
-        prize: "Total hadiah IDR 25.000.000",
-        status: "Meninjau peserta secara aktif",
-        recruiter: {
-            name: "Dr. Ahmad Fauzi",
-            title: "Koordinator Lomba"
-        }
-    },
-    3: {
-        title: "Lomba Karya Tulis Bahasa Indonesia",
-        organizer: "Institut Teknologi Bandung",
-        logo: "📝",
-        logoColor: "#10b981",
-        location: "Bandung, Jawa Barat (Di Kampus)",
-        deadline: "3 hari yang lalu",
-        applicants: "80+ peserta",
-        category: "Bahasa Indonesia",
-        categoryFilter: "bahasa-indonesia",
-        prize: "Total hadiah IDR 10.000.000",
-        status: "",
-        recruiter: {
-            name: "Prof. Siti Nurhaliza",
-            title: "Ketua Panitia"
-        }
-    },
-    4: {
-        title: "Lomba Desain Poster Nasional",
-        organizer: "StartupHub Indonesia",
-        logo: "🎨",
-        logoColor: "#f59e0b",
-        location: "Jakarta (Hybrid)",
-        deadline: "Dipromosikan",
-        applicants: "300+ peserta",
-        category: "Desain",
-        categoryFilter: "desain",
-        prize: "Total hadiah IDR 50.000.000",
-        status: "Meninjau peserta secara aktif",
-        recruiter: null
-    },
-    5: {
-        title: "Hackathon & Coding Competition",
-        organizer: "TechCorp Indonesia",
-        logo: "💻",
-        logoColor: "#ef4444",
-        location: "Area DKI Jakarta (Di Kantor)",
-        deadline: "5 hari yang lalu",
-        applicants: "250+ peserta",
-        category: "Teknologi",
-        categoryFilter: "teknologi",
-        prize: "Total hadiah IDR 30.000.000",
-        status: "",
-        recruiter: null
-    },
-    6: {
-        title: "Olimpiade Matematika SMA",
-        organizer: "Direktorat Pendidikan",
-        logo: "📐",
-        logoColor: "#06b6d4",
-        location: "Surabaya (Di Kampus)",
-        deadline: "1 bulan yang lalu",
-        applicants: "180+ peserta",
-        category: "Matematika",
-        categoryFilter: "matematika",
-        prize: "Total hadiah IDR 20.000.000",
-        status: "Meninjau peserta secara aktif",
-        recruiter: null
-    },
-    7: {
-        title: "Kompetisi Esai Bahasa Indonesia",
-        organizer: "Kemendikbud",
-        logo: "✍️",
-        logoColor: "#84cc16",
-        location: "Online",
-        deadline: "2 minggu yang lalu",
-        applicants: "120+ peserta",
-        category: "Bahasa Indonesia",
-        categoryFilter: "bahasa-indonesia",
-        prize: "Total hadiah IDR 12.000.000",
-        status: "",
-        recruiter: null
-    },
-    8: {
-        title: "Lomba Eksperimen Fisika",
-        organizer: "ITS Surabaya",
-        logo: "🔬",
-        logoColor: "#a855f7",
-        location: "Surabaya (Di Laboratorium)",
-        deadline: "5 hari yang lalu",
-        applicants: "90+ peserta",
-        category: "Fisika",
-        categoryFilter: "fisika",
-        prize: "Total hadiah IDR 18.000.000",
-        status: "",
-        recruiter: {
-            name: "Dr. Budi Santoso",
-            title: "Kepala Laboratorium"
-        }
-    }
-};
-
+let competitions = {};
 let activeFilter = 'semua';
 let selectedCompId = null;
+let allCompetitions = [];
+
+// Load data dari database saat halaman dimuat
+async function loadCompetitionsFromDatabase() {
+    try {
+        const response = await fetch('/api/lowongan');
+        const result = await response.json();
+        
+        if (result.success) {
+            allCompetitions = result.lowongan;
+            buildCompetitionsObject();
+            renderCompetitions();
+        } else {
+            console.error('Error loading competitions:', result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Konversi data dari database ke format yang sesuai
+function buildCompetitionsObject() {
+    competitions = {};
+    const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#84cc16', '#a855f7'];
+    const icons = ['🎓', '🔬', '📝', '🎨', '💻', '📐', '✍️', '🏆'];
+    
+    allCompetitions.forEach((comp, index) => {
+        competitions[comp._id] = {
+            id: comp._id,
+            title: comp.nama,
+            organizer: comp.penyelenggara,
+            logo: icons[index % icons.length],
+            logoColor: colors[index % colors.length],
+            location: comp.lokasi,
+            category: comp.kategori,
+            categoryFilter: comp.kategori.toLowerCase().replace(/\s+/g, '-'),
+            prize: comp.hadiah || 'Tidak ada hadiah',
+            description: comp.deskripsi,
+            requirements: comp.persyaratan,
+            linkKontak: comp.linkKontak,
+            linkPendaftaran: comp.linkPendaftaran,
+            deadline: formatDeadline(comp.tanggalExpired),
+            status: comp.status
+        };
+    });
+}
+
+// Format deadline
+function formatDeadline(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = date - now;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (days < 0) {
+        return `Expired ${Math.abs(days)} hari lalu`;
+    } else if (days === 0) {
+        return 'Hari ini deadline';
+    } else if (days === 1) {
+        return 'Besok deadline';
+    } else {
+        return `${days} hari lagi`;
+    }
+}
 
 function renderCompetitions() {
     const container = document.getElementById('competitionList');
@@ -199,33 +140,48 @@ function showDetail(id) {
     document.getElementById('detailTitle').textContent = comp.title;
     document.getElementById('detailLocation').textContent = comp.location;
     document.getElementById('detailDeadline').textContent = comp.deadline;
-    document.getElementById('detailApplicants').textContent = comp.applicants;
+    document.getElementById('detailApplicants').textContent = '';
     document.getElementById('detailCategory').textContent = comp.category;
     document.getElementById('detailPrize').textContent = comp.prize;
     
     if (comp.status) {
         document.getElementById('detailStatus').textContent = 
-            `Dipromosikan oleh pembuka lomba • ${comp.status}`;
+            `Dipromosikan oleh pembuka lomba • Status: ${comp.status}`;
         document.getElementById('detailStatus').style.display = 'block';
     } else {
         document.getElementById('detailStatus').style.display = 'none';
     }
     
     const recruiterBox = document.getElementById('recruiterBox');
-    if (comp.recruiter) {
-        document.getElementById('recruiterName').textContent = comp.recruiter.name;
-        document.getElementById('recruiterTitle').textContent = comp.recruiter.title;
-        recruiterBox.style.display = 'block';
-    } else {
-        recruiterBox.style.display = 'none';
-    }
+    recruiterBox.style.display = 'none';
     
-    document.getElementById('detailDescription').textContent = 
-        `${comp.organizer} adalah salah satu penyelenggara lomba terkemuka di Indonesia yang 
-        memberdayakan ribuan peserta untuk berkompetisi, belajar, dan berkembang dalam lingkungan 
-        yang terpercaya. Kami mencari peserta yang kreatif, berorientasi pada detail, dan mampu 
-        memberikan karya terbaik mereka melalui pengalaman yang bermakna.`;
+    document.getElementById('detailDescription').textContent = comp.description;
+    
+    // Update buttons dengan link yang benar
+    const applyButtons = document.querySelectorAll('.btn-primary');
+    const messageButtons = document.querySelectorAll('.btn-secondary');
+    
+    applyButtons.forEach(btn => {
+        btn.onclick = () => {
+            window.open(comp.linkPendaftaran, '_blank');
+        };
+        btn.textContent = '📝 Melamar Mudah';
+    });
+    
+    messageButtons.forEach(btn => {
+        if (btn.textContent.includes('Pesan') || btn.textContent.includes('Simpan')) {
+            btn.onclick = () => {
+                window.open(comp.linkKontak, '_blank');
+            };
+            btn.textContent = '📞 Pesan';
+        }
+    });
 }
 
-// Initialize
-renderCompetitions();
+// Load data saat halaman dimuat
+loadCompetitionsFromDatabase();
+
+// Update filter chips berdasarkan kategori yang tersedia
+document.addEventListener('DOMContentLoaded', function() {
+    loadCompetitionsFromDatabase();
+});

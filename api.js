@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("./skema/user.js");
+const Lowongan = require("./skema/lowongan.js");
 
 const route = express.Router();
 
@@ -252,6 +253,200 @@ route.post("/logout", (req, res) => {
         success: true, 
         message: "Logout berhasil" 
     });
+});
+
+// ============ LOWONGAN ROUTES ============
+
+// Tambah lowongan baru
+route.post("/lowongan", async (req, res) => {
+    try {
+        const { nama, deskripsi, penyelenggara, lokasi, tanggalExpired, kategori, hadiah, persyaratan, linkKontak, linkPendaftaran } = req.body;
+
+        // Validasi input
+        if (!nama || !deskripsi || !penyelenggara || !lokasi || !tanggalExpired || !kategori || !hadiah || !persyaratan || !linkKontak || !linkPendaftaran) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Semua field harus diisi" 
+            });
+        }
+
+        // Buat lowongan baru
+        const lowongan = new Lowongan({
+            nama,
+            deskripsi,
+            penyelenggara,
+            lokasi,
+            tanggalExpired: new Date(tanggalExpired),
+            kategori,
+            hadiah,
+            persyaratan,
+            linkKontak,
+            linkPendaftaran
+        });
+
+        await lowongan.save();
+
+        res.status(201).json({ 
+            success: true, 
+            message: "Lowongan berhasil ditambahkan",
+            lowongan
+        });
+
+    } catch (error) {
+        console.error('Tambah lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server",
+            error: error.message
+        });
+    }
+});
+
+// Ambil semua lowongan
+route.get("/lowongan", async (req, res) => {
+    try {
+        const lowongan = await Lowongan.find().sort({ createdAt: -1 });
+
+        res.json({ 
+            success: true, 
+            lowongan,
+            total: lowongan.length
+        });
+
+    } catch (error) {
+        console.error('Ambil lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Ambil lowongan berdasarkan kategori
+route.get("/lowongan/kategori/:kategori", async (req, res) => {
+    try {
+        const { kategori } = req.params;
+        
+        // Jika kategori adalah 'semua', ambil semua lowongan
+        let lowongan;
+        if (kategori.toLowerCase() === 'semua') {
+            lowongan = await Lowongan.find().sort({ createdAt: -1 });
+        } else {
+            lowongan = await Lowongan.find({ kategori: kategori }).sort({ createdAt: -1 });
+        }
+
+        res.json({ 
+            success: true, 
+            lowongan,
+            total: lowongan.length,
+            kategori
+        });
+
+    } catch (error) {
+        console.error('Ambil lowongan kategori error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Ambil detail lowongan berdasarkan ID
+route.get("/lowongan/:id", async (req, res) => {
+    try {
+        const lowongan = await Lowongan.findById(req.params.id);
+
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Lowongan tidak ditemukan" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            lowongan
+        });
+
+    } catch (error) {
+        console.error('Ambil detail lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Update lowongan
+route.put("/lowongan/:id", async (req, res) => {
+    try {
+        const { nama, deskripsi, penyelenggara, lokasi, tanggalExpired, kategori, hadiah, persyaratan, linkKontak, linkPendaftaran, status } = req.body;
+
+        const lowongan = await Lowongan.findByIdAndUpdate(
+            req.params.id,
+            {
+                nama,
+                deskripsi,
+                penyelenggara,
+                lokasi,
+                tanggalExpired: new Date(tanggalExpired),
+                kategori,
+                hadiah,
+                persyaratan,
+                linkKontak,
+                linkPendaftaran,
+                status
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Lowongan tidak ditemukan" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: "Lowongan berhasil diupdate",
+            lowongan
+        });
+
+    } catch (error) {
+        console.error('Update lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server",
+            error: error.message
+        });
+    }
+});
+
+// Hapus lowongan
+route.delete("/lowongan/:id", async (req, res) => {
+    try {
+        const lowongan = await Lowongan.findByIdAndDelete(req.params.id);
+
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Lowongan tidak ditemukan" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: "Lowongan berhasil dihapus"
+        });
+
+    } catch (error) {
+        console.error('Hapus lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
 });
 
 module.exports = route;
