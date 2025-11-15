@@ -2,6 +2,8 @@ let competitions = {};
 let activeFilter = 'semua';
 let selectedCompId = null;
 let allCompetitions = [];
+let lastClickTime = 0;
+let lastClickedId = null;
 
 // Load data dari database saat halaman dimuat
 async function loadCompetitionsFromDatabase() {
@@ -131,6 +133,26 @@ function toggleFilter(filter) {
 }
 
 function showDetail(id) {
+    // Detect double click
+    const currentTime = Date.now();
+    const timeDiff = currentTime - lastClickTime;
+    
+    // Jika double click (klik 2x dalam 300ms) dan id yang sama, tutup detail
+    if (timeDiff < 300 && lastClickedId === id && selectedCompId === id) {
+        // Close detail panel
+        document.getElementById('leftPanel').classList.remove('shrink');
+        document.getElementById('rightPanel').classList.remove('show');
+        selectedCompId = null;
+        renderCompetitions();
+        lastClickTime = 0;
+        lastClickedId = null;
+        return;
+    }
+    
+    // Update tracking untuk double click detection
+    lastClickTime = currentTime;
+    lastClickedId = id;
+    
     selectedCompId = id;
     const comp = competitions[id];
     const leftPanel = document.getElementById('leftPanel');

@@ -53,6 +53,11 @@ const lowonganSchema = new mongoose.Schema({
     jumlahPeserta: {
         type: Number,
         default: 0
+    },
+    submittedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, {
     timestamps: true

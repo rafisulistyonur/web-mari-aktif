@@ -5,10 +5,42 @@ function getToken() {
     return token;
 }
 
+// Load semua lomba untuk hashtag lookup
+let allCompetitions = {};
+async function loadCompetitionsForHashtag() {
+    try {
+        const response = await fetch('/api/lowongan');
+        const result = await response.json();
+        
+        if (result.success) {
+            // Buat mapping hashtag dari nama lomba
+            result.lowongan.forEach(comp => {
+                const hashtag = '#' + comp.nama.toUpperCase().replace(/\s+/g, '');
+                allCompetitions[hashtag] = {
+                    id: comp._id,
+                    nama: comp.nama,
+                    penyelenggara: comp.penyelenggara,
+                    lokasi: comp.lokasi,
+                    kategori: comp.kategori
+                };
+            });
+        }
+    } catch (error) {
+        console.error('Load competitions error:', error);
+    }
+}
+
 // Buka modal untuk membuat posting
 function openPostModal() {
     const modal = document.getElementById('postModal');
     modal.classList.add('active');
+    
+    // Setup autocomplete untuk textarea
+    const textarea = document.getElementById('postContent');
+    if (textarea) {
+        textarea.addEventListener('input', handleHashtagInput);
+        textarea.addEventListener('keydown', handleHashtagKeydown);
+    }
 }
 
 // Tutup modal
@@ -16,6 +48,7 @@ function closePostModal() {
     const modal = document.getElementById('postModal');
     modal.classList.remove('active');
     document.getElementById('postContent').value = '';
+    closeHashtagAutocomplete(); // Tutup autocomplete jika masih terbuka
 }
 
 // Buat postingan
@@ -101,6 +134,249 @@ function displayPosts(posts) {
     });
 }
 
+// Parse hashtag dari konten dan buat clickable
+function parseContentWithHashtags(content) {
+    const hashtagRegex = /#(\w+)/g;
+    let htmlContent = escapeHtml(content);
+    
+    htmlContent = htmlContent.replace(hashtagRegex, (match, hashtag) => {
+        // Cari lomba yang cocok dengan hashtag
+        const searchQuery = hashtag.toLowerCase();
+        const matchedCompetitions = findCompetitionsByKeyword(searchQuery);
+        
+        if (matchedCompetitions.length > 0) {
+            // Ambil kompetisi pertama yang match
+            const firstComp = matchedCompetitions[0];
+            // onclick untuk menampilkan detail atau navigate
+            return `<a href="#" class="hashtag-link" onclick="handleHashtagClick('${firstComp.id}'); return false;" title="Lihat lomba: ${searchQuery}">${match}</a>`;
+        }
+        return match;
+    });
+    
+    return htmlContent;
+}
+
+// Handle klik hashtag - tampilkan detail atau navigate
+function handleHashtagClick(compId) {
+    // Jika sedang di halaman lowongan dan fungsi showDetail tersedia
+    if (typeof showDetail === 'function') {
+        showDetail(compId);
+        // Scroll ke atas untuk fokus ke detail panel
+        document.querySelector('.right-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        // Jika di halaman lain, navigate ke lowongan dengan ID
+        window.location.href = '/lowongan?id=' + compId;
+    }
+}
+
+// Cari lomba berdasarkan keyword (awal huruf per kata)
+function findCompetitionsByKeyword(keyword) {
+    const keyword_lower = keyword.toLowerCase();
+    const results = [];
+    
+    for (const [hashtag, comp] of Object.entries(allCompetitions)) {
+        const nama_lower = comp.nama.toLowerCase();
+        const hashtag_lower = hashtag.toLowerCase();
+        
+        // Cek apakah nama atau hashtag dimulai dengan keyword
+        if (nama_lower.startsWith(keyword_lower) || hashtag_lower.includes('#' + keyword_lower)) {
+            results.push(comp);
+        }
+    }
+    
+    return results.slice(0, 10); // Limit 10 hasil
+}
+
+// Tampilkan modal search dari hashtag
+// ===== AUTOCOMPLETE HASHTAG SAAT MENGETIK =====
+
+let currentHashtagSuggestions = [];
+let selectedSuggestionIndex = -1;
+
+// Handle input saat user mengetik
+function handleHashtagInput(e) {
+    const textarea = e.target;
+    let text = textarea.value;
+    let cursorPos = textarea.selectionStart;
+    
+    // Prevent multiple ## - jika ada ##, replace dengan #
+    const hashtagCount = (text.match(/#/g) || []).length;
+    if (hashtagCount > 1) {
+        // Ada lebih dari 1 hashtag, hapus yang extra
+        let hashtagIndices = [];
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === '#') {
+                hashtagIndices.push(i);
+            }
+        }
+        
+        // Jika ada multiple ## bersebelahan, remove duplikat
+        if (hashtagIndices.length > 1) {
+            for (let i = hashtagIndices.length - 1; i > 0; i--) {
+                if (hashtagIndices[i] === hashtagIndices[i-1] + 1) {
+                    // ## ditemukan, remove yang ke-2
+                    text = text.substring(0, hashtagIndices[i]) + text.substring(hashtagIndices[i] + 1);
+                    if (cursorPos > hashtagIndices[i]) {
+                        cursorPos--;
+                    }
+                }
+            }
+            textarea.value = text;
+            textarea.setSelectionRange(cursorPos, cursorPos);
+        }
+    }
+    
+    // Cari hashtag yang sedang diketik
+    const textBeforeCursor = text.substring(0, cursorPos);
+    const lastHashtagMatch = textBeforeCursor.match(/#(\w*)$/);
+    
+    if (lastHashtagMatch) {
+        const searchText = lastHashtagMatch[1];
+        
+        if (searchText.length >= 0) {
+            // Tampilkan suggestions
+            showHashtagSuggestions(searchText, textarea);
+        }
+    } else {
+        closeHashtagAutocomplete();
+    }
+}
+
+// Handle keyboard input (arrow keys, enter)
+function handleHashtagKeydown(e) {
+    const suggestionList = document.getElementById('hashtagSuggestionList');
+    if (!suggestionList || suggestionList.style.display === 'none') {
+        return;
+    }
+    
+    const items = suggestionList.querySelectorAll('.hashtag-suggestion-item');
+    
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, items.length - 1);
+        updateSuggestionSelection(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+        updateSuggestionSelection(items);
+    } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+        e.preventDefault();
+        items[selectedSuggestionIndex].click();
+    } else if (e.key === 'Escape') {
+        closeHashtagAutocomplete();
+    }
+}
+
+// Update visual selection di suggestion list
+function updateSuggestionSelection(items) {
+    items.forEach((item, index) => {
+        if (index === selectedSuggestionIndex) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+}
+
+// Tampilkan suggestions
+function showHashtagSuggestions(searchText, textarea) {
+    const suggestions = searchCompetitionsByPrefix(searchText);
+    currentHashtagSuggestions = suggestions;
+    selectedSuggestionIndex = -1;
+    
+    // Hapus suggestion list lama jika ada
+    closeHashtagAutocomplete();
+    
+    if (suggestions.length === 0) {
+        return;
+    }
+    
+    // Buat suggestion list
+    const suggestionList = document.createElement('div');
+    suggestionList.id = 'hashtagSuggestionList';
+    suggestionList.className = 'hashtag-suggestion-list';
+    
+    suggestionList.innerHTML = suggestions.map((comp, index) => `
+        <div class="hashtag-suggestion-item" onclick="selectHashtagSuggestion('${comp.nama}')">
+            <div class="hashtag-suggestion-content">
+                <div class="hashtag-suggestion-name">${comp.nama}</div>
+                <div class="hashtag-suggestion-meta">${comp.kategori}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Position suggestion list di bawah textarea
+    const rect = textarea.getBoundingClientRect();
+    suggestionList.style.position = 'fixed';
+    suggestionList.style.top = (rect.bottom + 5) + 'px';
+    suggestionList.style.left = rect.left + 'px';
+    suggestionList.style.width = rect.width + 'px';
+    
+    document.body.appendChild(suggestionList);
+}
+
+// Cari kompetisi berdasarkan prefix
+function searchCompetitionsByPrefix(prefix) {
+    const prefix_lower = prefix.toLowerCase();
+    const results = [];
+    
+    // Jika prefix kosong, tampilkan semua
+    if (prefix_lower === '') {
+        for (const [hashtag, comp] of Object.entries(allCompetitions)) {
+            results.push(comp);
+        }
+        return results.slice(0, 5);
+    }
+    
+    for (const [hashtag, comp] of Object.entries(allCompetitions)) {
+        const nama_lower = comp.nama.toLowerCase();
+        
+        // Cek apakah nama dimulai dengan prefix
+        if (nama_lower.startsWith(prefix_lower)) {
+            results.push(comp);
+        }
+    }
+    
+    return results.slice(0, 5); // Limit 5 suggestions
+}
+
+// Pilih suggestion
+function selectHashtagSuggestion(competitionName) {
+    const textarea = document.getElementById('postContent');
+    const text = textarea.value;
+    const cursorPos = textarea.selectionStart;
+    
+    // Cari hashtag yang sedang diketik
+    const textBeforeCursor = text.substring(0, cursorPos);
+    const lastHashtagMatch = textBeforeCursor.match(/#(\w*)$/);
+    
+    if (lastHashtagMatch) {
+        // hashtagStart harus include '#', jadi kurangi 1
+        const hashtagStart = cursorPos - lastHashtagMatch[1].length - 1;
+        const beforeHashtag = text.substring(0, hashtagStart);
+        const afterCursor = text.substring(cursorPos);
+        
+        // Buat hashtag dari nama kompetisi
+        const hashtag = '#' + competitionName.toUpperCase().replace(/\s+/g, '');
+        
+        // Replace teks
+        textarea.value = beforeHashtag + hashtag + ' ' + afterCursor;
+        textarea.focus();
+        textarea.setSelectionRange(beforeHashtag.length + hashtag.length + 1, beforeHashtag.length + hashtag.length + 1);
+    }
+    
+    closeHashtagAutocomplete();
+}
+
+// Tutup autocomplete
+function closeHashtagAutocomplete() {
+    const suggestionList = document.getElementById('hashtagSuggestionList');
+    if (suggestionList) {
+        suggestionList.remove();
+    }
+    selectedSuggestionIndex = -1;
+}
+
 // Buat elemen post card
 function createPostCard(post, token) {
     const card = document.createElement('div');
@@ -128,7 +404,7 @@ function createPostCard(post, token) {
             </button>
         </div>
         <div class="post-content">
-            <p>${escapeHtml(post.content)}</p>
+            <p>${parseContentWithHashtags(post.content)}</p>
         </div>
         <div class="post-stats" style="display: flex; justify-content: space-between; padding: 10px 20px; font-size: 13px; color: #666; border-top: 1px solid #e0e0e0;">
             <span>${post.likes.length} Suka</span>
@@ -376,6 +652,7 @@ function openPostMenu(postId) {
 
 // Load posts ketika halaman pertama kali dimuat
 document.addEventListener('DOMContentLoaded', function() {
+    loadCompetitionsForHashtag(); // Load kompetisi untuk hashtag
     loadPosts();
 
     // Trigger modal ketika post input diklik
@@ -385,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Add style untuk liked/disliked button
+// Add style untuk liked/disliked button dan hashtag link
 const style = document.createElement('style');
 style.textContent = `
     .post-action.liked {
@@ -394,6 +671,72 @@ style.textContent = `
     
     .post-action.disliked {
         color: #e74c3c;
+    }
+    
+    .hashtag-link {
+        color: #2777b9;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .hashtag-link:hover {
+        text-decoration: underline;
+        color: #1e5f8c;
+    }
+    
+    /* Hashtag Search Modal */
+    /* Hashtag Autocomplete */
+    .hashtag-suggestion-list {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 9999;
+    }
+    
+    .hashtag-suggestion-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .hashtag-suggestion-item:last-child {
+        border-bottom: none;
+    }
+    
+    .hashtag-suggestion-item:hover,
+    .hashtag-suggestion-item.selected {
+        background: #f9f9f9;
+    }
+    
+    .hashtag-suggestion-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .hashtag-suggestion-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .hashtag-suggestion-meta {
+        font-size: 12px;
+        color: #999;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 `;
 document.head.appendChild(style);

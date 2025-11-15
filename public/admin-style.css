@@ -236,6 +236,20 @@ body {
     gap: 20px;
 }
 
+.empty-state {
+    grid-column: 1 / -1;
+    background: white;
+    border-radius: 8px;
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin: 0;
+}
+
 .lomba-card {
     background: white;
     border-radius: 8px;

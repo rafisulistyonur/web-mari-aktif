@@ -67,6 +67,13 @@
     if (user) {
         console.log('User authenticated:', user.username);
         
+        // Simpan user info ke localStorage untuk akses di script lain
+        localStorage.setItem('currentUser', JSON.stringify({
+            id: user.id,
+            username: user.username,
+            nisn: user.nisn
+        }));
+        
         // Update UI dengan info user jika diperlukan
         const userNameElement = document.getElementById('userName');
         if (userNameElement) {

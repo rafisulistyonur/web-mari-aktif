@@ -64,7 +64,8 @@ body {
 
 .container {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
 }
 
 .left-panel {
@@ -73,6 +74,9 @@ body {
     border-right: 1px solid #ddd;
     overflow: hidden;
     transition: width 0.3s ease;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .left-panel.shrink {
@@ -83,6 +87,7 @@ body {
     padding: 16px;
     border-bottom: 1px solid #ddd;
     background: white;
+    margin-top: 60px;
 }
 
 .header h2 {
@@ -103,7 +108,10 @@ body {
 
 .competition-list {
     overflow-y: auto;
-    height: calc(100vh - 110px);
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    min-height: 0;
 }
 
 .competition-card {
@@ -112,6 +120,8 @@ body {
     cursor: pointer;
     position: relative;
     transition: background 0.2s;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .competition-card:hover {
@@ -126,6 +136,7 @@ body {
 .card-content {
     display: flex;
     gap: 12px;
+    align-items: flex-start;
 }
 
 .logo {
@@ -142,6 +153,7 @@ body {
 .card-info {
     flex: 1;
     padding-right: 30px;
+    min-width: 0;
 }
 
 .card-title {
@@ -149,6 +161,7 @@ body {
     font-weight: 600;
     margin-bottom: 4px;
     font-size: 15px;
+    word-break: break-word;
 }
 
 .card-title:hover {
@@ -200,7 +213,12 @@ body {
     width: 0;
     background: white;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     transition: width 0.3s ease;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .right-panel.show {
@@ -217,6 +235,8 @@ body {
     top: 0;
     background: white;
     z-index: 10;
+    margin-top: 60px;
+    flex-shrink: 0;
 }
 
 .detail-header-left {
@@ -227,6 +247,9 @@ body {
 
 .detail-content {
     padding: 24px;
+    padding-bottom: 100px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .detail-title {
@@ -254,6 +277,7 @@ body {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .btn-primary {
@@ -397,6 +421,9 @@ body {
     padding: 16px;
     border-bottom: 1px solid #ddd;
     background: white;
+    position: sticky;
+    top: 0;
+    z-index: 9;
 }
 
 .filter-section h3 {
@@ -433,6 +460,310 @@ body {
     background: #0a66c2;
     color: white;
     border-color: #0a66c2;
+}
+
+/* Responsive untuk tablet */
+@media (max-width: 1024px) {
+    .left-panel.shrink {
+        width: 40%;
+    }
+    
+    .right-panel.show {
+        width: 60%;
+    }
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+    body {
+        padding-top: 70px;
+    }
+
+    .container {
+        flex-direction: column;
+        min-height: auto;
+        padding-top: 0 !important;
+        padding-bottom: 20px !important;
+    }
+    
+    .admin-btn {
+        padding: 10px 16px;
+        font-size: 12px;
+        top: 70px;
+        right: 10px;
+    }
+    
+    .admin-btn span {
+        display: none;
+    }
+    
+    .admin-btn i {
+        font-size: 18px;
+    }
+    
+    .left-panel {
+        width: 100%;
+        max-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .left-panel.shrink {
+        width: 100%;
+        display: block;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .header {
+        padding: 12px 16px;
+        top: 0;
+        z-index: 10;
+        margin-top: 50px;
+    }
+    
+    .header h2 {
+        font-size: 18px;
+        margin-bottom: 2px;
+    }
+    
+    .header p {
+        font-size: 13px;
+    }
+    
+    .results-count {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    
+    .filter-section {
+        padding: 12px 16px;
+        top: 0;
+        z-index: 9;
+    }
+    
+    .filter-section h3 {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+    
+    .filter-chips {
+        gap: 6px;
+    }
+    
+    .filter-chip {
+        padding: 5px 12px;
+        font-size: 12px;
+    }
+    
+    .competition-list {
+        max-height: auto;
+    }
+    
+    .competition-card {
+        padding: 12px;
+    }
+    
+    .card-info {
+        padding-right: 20px;
+    }
+    
+    .card-title {
+        font-size: 14px;
+    }
+    
+    .organizer {
+        font-size: 13px;
+    }
+    
+    .location,
+    .deadline,
+    .status {
+        font-size: 12px;
+    }
+    
+    .right-panel {
+        width: 100%;
+        max-height: auto;
+        border-top: 1px solid #ddd;
+    }
+    
+    .right-panel.show {
+        width: 100%;
+    }
+    
+    .detail-header {
+        padding: 12px 16px;
+        top: 0;
+        position: sticky;
+        z-index: 10;
+        margin-top: 50px;
+        flex-shrink: 0;
+    }
+    
+    .detail-content {
+        padding: 16px;
+        padding-bottom: 80px;
+    }
+    
+    .detail-title {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+    
+    .detail-meta {
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .action-buttons {
+        gap: 8px;
+        margin: 16px 0;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 10px 16px;
+        font-size: 13px;
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .logo {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .about-section {
+        margin: 16px 0;
+    }
+    
+    .about-section h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .about-section p {
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+    
+    .recruiter-box {
+        padding: 12px;
+        margin: 16px 0;
+    }
+    
+    .recruiter-box h3 {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .recruiter-info {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .recruiter-avatar {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .recruiter-details h4 {
+        font-size: 14px;
+    }
+    
+    .recruiter-details p {
+        font-size: 12px;
+    }
+    
+    .premium-banner {
+        padding: 12px;
+        margin: 16px 0;
+    }
+    
+    .premium-banner h3 {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+    
+    .premium-banner p {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .icon-btn {
+        padding: 4px;
+    }
+}
+
+/* Responsive untuk mobile kecil (< 480px) */
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 12px;
+    }
+    
+    .header h2 {
+        font-size: 16px;
+    }
+    
+    .filter-section {
+        padding: 10px 12px;
+    }
+    
+    .filter-section h3 {
+        font-size: 12px;
+    }
+    
+    .filter-chip {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+    
+    .competition-card {
+        padding: 10px;
+    }
+    
+    .logo {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .card-content {
+        gap: 8px;
+    }
+    
+    .detail-content {
+        padding: 12px;
+        padding-bottom: 70px;
+    }
+    
+    .detail-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    .action-buttons {
+        gap: 6px;
+        margin: 12px 0;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 100px;
+    }
+    
+    .about-section h3 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .about-section p {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
 }
 
 /* Status Badge Styling */

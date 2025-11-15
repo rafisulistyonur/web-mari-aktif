@@ -1,15 +1,53 @@
 let lombaData = [];
 let editingId = null;
+let currentUserId = null;
+let token = null;
+
+// Dapatkan token dari localStorage
+function getToken() {
+    return localStorage.getItem('authToken');
+}
+
+// Dapatkan user info dari localStorage
+function getUserInfo() {
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+        try {
+            return JSON.parse(userStr);
+        } catch (e) {
+            return window.authUser; // Fallback ke window.authUser jika ada
+        }
+    }
+    return window.authUser; // Fallback ke window.authUser
+}
 
 // Inisialisasi - ambil data dari database
 function initData() {
+    token = getToken();
+    const user = getUserInfo();
+    if (user) {
+        currentUserId = user.id;
+        console.log('Current user ID:', currentUserId);
+    }
+    
+    if (!token) {
+        console.log('No token found, user needs to login');
+        alert('Silakan login terlebih dahulu');
+        window.location.href = '/login';
+        return;
+    }
+    
     loadLombaDariDatabase();
 }
 
-// Ambil data lowongan dari database
+// Ambil data lowongan milik user dari database
 async function loadLombaDariDatabase() {
     try {
-        const response = await fetch('/api/lowongan');
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        };
+
+        const response = await fetch('/api/lowongan/my', { headers });
         const result = await response.json();
         
         if (result.success) {
@@ -17,9 +55,14 @@ async function loadLombaDariDatabase() {
             renderLomba();
         } else {
             console.error('Error loading lomba:', result.message);
+            // Jika token tidak valid atau lainnya
+            if (result.message.includes('Token')) {
+                alert('Sesi Anda telah berakhir, silakan login kembali');
+            }
         }
     } catch (error) {
         console.error('Error:', error);
+        alert('Error loading data');
     }
 }
 
@@ -27,11 +70,24 @@ function renderLomba() {
     const grid = document.getElementById('lombaGrid');
     const today = new Date().toISOString().split('T')[0];
     
+    if (lombaData.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><p>Belum ada lomba yang Anda submit. Buat yang baru dengan klik tombol "Tambah Lomba Baru"</p></div>';
+        document.getElementById('totalLomba').textContent = 0;
+        return;
+    }
+    
     grid.innerHTML = lombaData.map(lomba => {
         const expiredDate = new Date(lomba.tanggalExpired).toISOString().split('T')[0];
         const isExpired = expiredDate < today;
         const statusClass = isExpired ? 'status-inactive' : 'status-active';
         const statusText = isExpired ? 'EXPIRED' : 'AKTIF';
+        
+        // Cek apakah user adalah pemilik lomba ini
+        const submittedById = lomba.submittedBy?._id || lomba.submittedBy;
+        const isOwner = currentUserId && submittedById && 
+                       (submittedById.toString() === currentUserId.toString());
+        
+        console.log('Lomba:', lomba.nama, 'submittedBy:', submittedById, 'currentUserId:', currentUserId, 'isOwner:', isOwner);
         
         return `
             <div class="lomba-card">
@@ -70,12 +126,16 @@ function renderLomba() {
                 </div>
                 
                 <div class="lomba-card-footer">
-                    <button class="btn btn-primary btn-small" onclick="editLomba('${lomba._id}')">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="btn btn-danger btn-small" onclick="deleteLomba('${lomba._id}')">
-                        <i class="fas fa-trash"></i> Hapus
-                    </button>
+                    ${isOwner ? `
+                        <button class="btn btn-primary btn-small" onclick="editLomba('${lomba._id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteLomba('${lomba._id}')">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    ` : `
+                        <div style="color: #999; font-size: 12px;">Anda bukan pemilik lomba ini</div>
+                    `}
                 </div>
             </div>
         `;
@@ -138,23 +198,23 @@ document.getElementById('lombaForm').addEventListener('submit', async function(e
 
     try {
         let response;
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
         
         if (editingId) {
             // Update existing
             response = await fetch(`/api/lowongan/${editingId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers,
                 body: JSON.stringify(data)
             });
         } else {
             // Create new
             response = await fetch('/api/lowongan', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers,
                 body: JSON.stringify(data)
             });
         }
@@ -177,8 +237,13 @@ document.getElementById('lombaForm').addEventListener('submit', async function(e
 // Fungsi untuk menghapus dari database
 async function deleteFromDatabase(id) {
     try {
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        };
+
         const response = await fetch(`/api/lowongan/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers
         });
 
         const result = await response.json();

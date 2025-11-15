@@ -257,8 +257,8 @@ route.post("/logout", (req, res) => {
 
 // ============ LOWONGAN ROUTES ============
 
-// Tambah lowongan baru
-route.post("/lowongan", async (req, res) => {
+// Tambah lowongan baru (protected - hanya user yang login)
+route.post("/lowongan", verifyToken, async (req, res) => {
     try {
         const { nama, deskripsi, penyelenggara, lokasi, tanggalExpired, kategori, hadiah, persyaratan, linkKontak, linkPendaftaran } = req.body;
 
@@ -270,7 +270,7 @@ route.post("/lowongan", async (req, res) => {
             });
         }
 
-        // Buat lowongan baru
+        // Buat lowongan baru dengan submittedBy = user yang login
         const lowongan = new Lowongan({
             nama,
             deskripsi,
@@ -281,10 +281,12 @@ route.post("/lowongan", async (req, res) => {
             hadiah,
             persyaratan,
             linkKontak,
-            linkPendaftaran
+            linkPendaftaran,
+            submittedBy: req.userId
         });
 
         await lowongan.save();
+        await lowongan.populate('submittedBy', 'username');
 
         res.status(201).json({ 
             success: true, 
@@ -305,7 +307,9 @@ route.post("/lowongan", async (req, res) => {
 // Ambil semua lowongan
 route.get("/lowongan", async (req, res) => {
     try {
-        const lowongan = await Lowongan.find().sort({ createdAt: -1 });
+        const lowongan = await Lowongan.find()
+            .sort({ createdAt: -1 })
+            .populate('submittedBy', 'username');
 
         res.json({ 
             success: true, 
@@ -322,6 +326,28 @@ route.get("/lowongan", async (req, res) => {
     }
 });
 
+// Ambil lowongan milik user (untuk admin panel)
+route.get("/lowongan/my", verifyToken, async (req, res) => {
+    try {
+        const lowongan = await Lowongan.find({ submittedBy: req.userId })
+            .sort({ createdAt: -1 })
+            .populate('submittedBy', 'username');
+
+        res.json({ 
+            success: true, 
+            lowongan,
+            total: lowongan.length
+        });
+
+    } catch (error) {
+        console.error('Ambil lowongan user error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
 // Ambil lowongan berdasarkan kategori
 route.get("/lowongan/kategori/:kategori", async (req, res) => {
     try {
@@ -330,9 +356,13 @@ route.get("/lowongan/kategori/:kategori", async (req, res) => {
         // Jika kategori adalah 'semua', ambil semua lowongan
         let lowongan;
         if (kategori.toLowerCase() === 'semua') {
-            lowongan = await Lowongan.find().sort({ createdAt: -1 });
+            lowongan = await Lowongan.find()
+                .sort({ createdAt: -1 })
+                .populate('submittedBy', 'username');
         } else {
-            lowongan = await Lowongan.find({ kategori: kategori }).sort({ createdAt: -1 });
+            lowongan = await Lowongan.find({ kategori: kategori })
+                .sort({ createdAt: -1 })
+                .populate('submittedBy', 'username');
         }
 
         res.json({ 
@@ -354,7 +384,8 @@ route.get("/lowongan/kategori/:kategori", async (req, res) => {
 // Ambil detail lowongan berdasarkan ID
 route.get("/lowongan/:id", async (req, res) => {
     try {
-        const lowongan = await Lowongan.findById(req.params.id);
+        const lowongan = await Lowongan.findById(req.params.id)
+            .populate('submittedBy', 'username');
 
         if (!lowongan) {
             return res.status(404).json({ 
@@ -377,12 +408,30 @@ route.get("/lowongan/:id", async (req, res) => {
     }
 });
 
-// Update lowongan
-route.put("/lowongan/:id", async (req, res) => {
+// Update lowongan (hanya pemilik yang bisa update)
+route.put("/lowongan/:id", verifyToken, async (req, res) => {
     try {
         const { nama, deskripsi, penyelenggara, lokasi, tanggalExpired, kategori, hadiah, persyaratan, linkKontak, linkPendaftaran, status } = req.body;
 
-        const lowongan = await Lowongan.findByIdAndUpdate(
+        // Cek apakah lomba ada dan user adalah pemiliknya
+        const lowongan = await Lowongan.findById(req.params.id);
+
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Lowongan tidak ditemukan" 
+            });
+        }
+
+        if (lowongan.submittedBy.toString() !== req.userId.toString()) {
+            return res.status(403).json({ 
+                success: false, 
+                message: "Anda tidak memiliki izin untuk mengubah lowongan ini" 
+            });
+        }
+
+        // Update lowongan
+        const updatedLowongan = await Lowongan.findByIdAndUpdate(
             req.params.id,
             {
                 nama,
@@ -398,19 +447,12 @@ route.put("/lowongan/:id", async (req, res) => {
                 status
             },
             { new: true, runValidators: true }
-        );
-
-        if (!lowongan) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "Lowongan tidak ditemukan" 
-            });
-        }
+        ).populate('submittedBy', 'username');
 
         res.json({ 
             success: true, 
             message: "Lowongan berhasil diupdate",
-            lowongan
+            lowongan: updatedLowongan
         });
 
     } catch (error) {
@@ -423,10 +465,10 @@ route.put("/lowongan/:id", async (req, res) => {
     }
 });
 
-// Hapus lowongan
-route.delete("/lowongan/:id", async (req, res) => {
+// Hapus lowongan (hanya pemilik yang bisa hapus)
+route.delete("/lowongan/:id", verifyToken, async (req, res) => {
     try {
-        const lowongan = await Lowongan.findByIdAndDelete(req.params.id);
+        const lowongan = await Lowongan.findById(req.params.id);
 
         if (!lowongan) {
             return res.status(404).json({ 
@@ -434,6 +476,15 @@ route.delete("/lowongan/:id", async (req, res) => {
                 message: "Lowongan tidak ditemukan" 
             });
         }
+
+        if (lowongan.submittedBy.toString() !== req.userId.toString()) {
+            return res.status(403).json({ 
+                success: false, 
+                message: "Anda tidak memiliki izin untuk menghapus lowongan ini" 
+            });
+        }
+
+        await Lowongan.findByIdAndDelete(req.params.id);
 
         res.json({ 
             success: true, 
