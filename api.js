@@ -449,4 +449,43 @@ route.delete("/lowongan/:id", async (req, res) => {
     }
 });
 
+// ============ SEARCH ROUTES ============
+
+// Search lomba berdasarkan nama, kategori, atau penyelenggara
+route.get("/search/lowongan", async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        if (!query || query.trim() === '') {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Query tidak boleh kosong" 
+            });
+        }
+
+        // Cari di nama, kategori, penyelenggara, dan deskripsi
+        const results = await Lowongan.find({
+            $or: [
+                { nama: { $regex: query, $options: 'i' } },
+                { kategori: { $regex: query, $options: 'i' } },
+                { penyelenggara: { $regex: query, $options: 'i' } },
+                { deskripsi: { $regex: query, $options: 'i' } }
+            ]
+        }).limit(10);
+
+        res.json({ 
+            success: true, 
+            results,
+            total: results.length
+        });
+
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
 module.exports = route;

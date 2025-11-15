@@ -28,6 +28,13 @@ function buildCompetitionsObject() {
     const icons = ['🎓', '🔬', '📝', '🎨', '💻', '📐', '✍️', '🏆'];
     
     allCompetitions.forEach((comp, index) => {
+        // Hitung status berdasarkan tanggal expired
+        const today = new Date();
+        const expiredDate = new Date(comp.tanggalExpired);
+        const isExpired = expiredDate < today;
+        const statusBadge = isExpired ? 'EXPIRED' : 'AKTIF';
+        const statusClass = isExpired ? 'expired' : 'aktif';
+        
         competitions[comp._id] = {
             id: comp._id,
             title: comp.nama,
@@ -43,7 +50,10 @@ function buildCompetitionsObject() {
             linkKontak: comp.linkKontak,
             linkPendaftaran: comp.linkPendaftaran,
             deadline: formatDeadline(comp.tanggalExpired),
-            status: comp.status
+            status: comp.status,
+            statusBadge: statusBadge,
+            statusClass: statusClass,
+            expiredDate: comp.tanggalExpired
         };
     });
 }
@@ -90,7 +100,7 @@ function renderCompetitions() {
                         <div class="organizer">${comp.organizer}</div>
                         <div class="location">${comp.location}</div>
                         <div class="deadline">${comp.deadline}</div>
-                        ${comp.status ? `<div class="status">📝 ${comp.status}</div>` : ''}
+                        <div class="status-badge ${comp.statusClass}">${comp.statusBadge}</div>
                     </div>
                 </div>
             `;
@@ -144,18 +154,18 @@ function showDetail(id) {
     document.getElementById('detailCategory').textContent = comp.category;
     document.getElementById('detailPrize').textContent = comp.prize;
     
-    if (comp.status) {
-        document.getElementById('detailStatus').textContent = 
-            `Dipromosikan oleh pembuka lomba • Status: ${comp.status}`;
-        document.getElementById('detailStatus').style.display = 'block';
-    } else {
-        document.getElementById('detailStatus').style.display = 'none';
-    }
+    // Update status dengan styling
+    const statusElement = document.getElementById('detailStatus');
+    statusElement.innerHTML = `<span class="status-badge ${comp.statusClass}">${comp.statusBadge}</span>`;
+    statusElement.style.display = 'block';
     
     const recruiterBox = document.getElementById('recruiterBox');
     recruiterBox.style.display = 'none';
     
     document.getElementById('detailDescription').textContent = comp.description;
+    
+    // Update persyaratan dari database
+    document.getElementById('detailRequirements').textContent = comp.requirements || 'Persyaratan tidak tersedia';
     
     // Update buttons dengan link yang benar
     const applyButtons = document.querySelectorAll('.btn-primary');
@@ -184,4 +194,17 @@ loadCompetitionsFromDatabase();
 // Update filter chips berdasarkan kategori yang tersedia
 document.addEventListener('DOMContentLoaded', function() {
     loadCompetitionsFromDatabase();
+    
+    // Check if there's an ID parameter in URL (from search)
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get('id');
+    
+    if (idParam) {
+        // Delay untuk memastikan data sudah loaded
+        setTimeout(() => {
+            if (competitions[idParam]) {
+                showDetail(idParam);
+            }
+        }, 500);
+    }
 });

@@ -39,6 +39,28 @@
         }
     }
 
+    // Fungsi untuk ambil jumlah teman
+    async function getConnectionCount() {
+        try {
+            const token = getToken();
+            const response = await fetch('/api/friendship/list', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                return data.total;
+            }
+            return 0;
+        } catch (error) {
+            console.error('Get connections error:', error);
+            return 0;
+        }
+    }
+
     // Cek autentikasi saat halaman load
     const user = await checkAuth();
     
@@ -54,6 +76,13 @@
         const nisnElement = document.getElementById('userNisn');
         if (nisnElement) {
             nisnElement.textContent = user.nisn;
+        }
+
+        // Update jumlah koneksi/teman
+        const connectionCount = await getConnectionCount();
+        const statValueElement = document.querySelector('.stat-value');
+        if (statValueElement) {
+            statValueElement.textContent = connectionCount;
         }
     }
 
