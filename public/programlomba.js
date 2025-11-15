@@ -89,6 +89,20 @@ function renderLomba() {
         
         console.log('Lomba:', lomba.nama, 'submittedBy:', submittedById, 'currentUserId:', currentUserId, 'isOwner:', isOwner);
         
+        // Tentukan approval status badge
+        let approvalBadge = '';
+        let approvalClass = '';
+        if (lomba.approvalStatus === 'pending') {
+            approvalBadge = '⏳ Menunggu Persetujuan';
+            approvalClass = 'status-pending';
+        } else if (lomba.approvalStatus === 'approved') {
+            approvalBadge = '✓ Disetujui';
+            approvalClass = 'status-active';
+        } else if (lomba.approvalStatus === 'rejected') {
+            approvalBadge = '✗ Ditolak';
+            approvalClass = 'status-inactive';
+        }
+        
         return `
             <div class="lomba-card">
                 <div class="lomba-card-header">
@@ -123,11 +137,25 @@ function renderLomba() {
                             <span class="status-badge ${statusClass}">${statusText}</span>
                         </div>
                     </div>
+                    
+                    <div class="lomba-info">
+                        <div class="lomba-info-label">Approval Status</div>
+                        <div class="lomba-info-value">
+                            <span class="status-badge ${approvalClass}">${approvalBadge}</span>
+                        </div>
+                    </div>
+                    
+                    ${lomba.approvalStatus === 'rejected' ? `
+                        <div class="lomba-info">
+                            <div class="lomba-info-label">Alasan Penolakan</div>
+                            <div class="lomba-info-value" style="color: #e74c3c;">${lomba.rejectionReason || 'Tidak ada keterangan'}</div>
+                        </div>
+                    ` : ''}
                 </div>
                 
                 <div class="lomba-card-footer">
                     ${isOwner ? `
-                        <button class="btn btn-primary btn-small" onclick="editLomba('${lomba._id}')">
+                        <button class="btn btn-primary btn-small" onclick="editLomba('${lomba._id}')" ${lomba.approvalStatus === 'approved' ? '' : ''}>
                             <i class="fas fa-edit"></i> Edit
                         </button>
                         <button class="btn btn-danger btn-small" onclick="deleteLomba('${lomba._id}')">
@@ -222,7 +250,11 @@ document.getElementById('lombaForm').addEventListener('submit', async function(e
         const result = await response.json();
 
         if (result.success) {
-            alert(result.message);
+            if (!editingId) {
+                alert('✓ Lomba berhasil ditambahkan!\n\nLomba Anda sedang menunggu persetujuan dari Developer Panel sebelum tampil di halaman lowongan.');
+            } else {
+                alert(result.message);
+            }
             loadLombaDariDatabase();
             closeModal();
         } else {

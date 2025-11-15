@@ -307,7 +307,8 @@ route.post("/lowongan", verifyToken, async (req, res) => {
 // Ambil semua lowongan
 route.get("/lowongan", async (req, res) => {
     try {
-        const lowongan = await Lowongan.find()
+        // Hanya tampilkan lowongan yang sudah diapprove
+        const lowongan = await Lowongan.find({ approvalStatus: 'approved' })
             .sort({ createdAt: -1 })
             .populate('submittedBy', 'username');
 
@@ -353,14 +354,17 @@ route.get("/lowongan/kategori/:kategori", async (req, res) => {
     try {
         const { kategori } = req.params;
         
-        // Jika kategori adalah 'semua', ambil semua lowongan
+        // Jika kategori adalah 'semua', ambil semua lowongan yang diapprove
         let lowongan;
         if (kategori.toLowerCase() === 'semua') {
-            lowongan = await Lowongan.find()
+            lowongan = await Lowongan.find({ approvalStatus: 'approved' })
                 .sort({ createdAt: -1 })
                 .populate('submittedBy', 'username');
         } else {
-            lowongan = await Lowongan.find({ kategori: kategori })
+            lowongan = await Lowongan.find({ 
+                kategori: kategori,
+                approvalStatus: 'approved'
+            })
                 .sort({ createdAt: -1 })
                 .populate('submittedBy', 'username');
         }
@@ -532,6 +536,142 @@ route.get("/search/lowongan", async (req, res) => {
 
     } catch (error) {
         console.error('Search error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Ambil semua lowongan untuk hashtag autocomplete (hanya yang approved)
+route.get("/lowongan-for-hashtags", async (req, res) => {
+    try {
+        // Ambil semua lowongan yang sudah diapprove (untuk hashtag suggestions)
+        const lowongan = await Lowongan.find({ 
+            approvalStatus: 'approved'
+        })
+            .select('_id nama kategori penyelenggara lokasi deskripsi')
+            .sort({ createdAt: -1 });
+
+        res.json({ 
+            success: true, 
+            lowongan,
+            total: lowongan.length
+        });
+
+    } catch (error) {
+        console.error('Ambil lowongan untuk hashtag error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// ============ APPROVAL ROUTES ============
+
+// Ambil semua lowongan yang perlu approval (untuk developer panel)
+route.get("/lowongan-pending-approval", verifyToken, async (req, res) => {
+    try {
+        const pendingLowongan = await Lowongan.find({ approvalStatus: 'pending' })
+            .sort({ createdAt: -1 })
+            .populate('submittedBy', 'username nisn')
+            .populate('approvedBy', 'username');
+
+        res.json({ 
+            success: true, 
+            lowongan: pendingLowongan,
+            total: pendingLowongan.length
+        });
+
+    } catch (error) {
+        console.error('Ambil pending lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Approve lowongan (hanya admin/developer yang bisa approve)
+route.put("/lowongan/:id/approve", verifyToken, async (req, res) => {
+    try {
+        const lowongan = await Lowongan.findById(req.params.id);
+
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Lowongan tidak ditemukan" 
+            });
+        }
+
+        // Update status menjadi approved
+        const approvedLowongan = await Lowongan.findByIdAndUpdate(
+            req.params.id,
+            {
+                approvalStatus: 'approved',
+                approvedBy: req.userId,
+                approvedAt: new Date()
+            },
+            { new: true }
+        ).populate('submittedBy', 'username').populate('approvedBy', 'username');
+
+        res.json({ 
+            success: true, 
+            message: "Lowongan berhasil disetujui",
+            lowongan: approvedLowongan
+        });
+
+    } catch (error) {
+        console.error('Approve lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Reject lowongan (hanya admin/developer yang bisa reject)
+route.put("/lowongan/:id/reject", verifyToken, async (req, res) => {
+    try {
+        const { reason } = req.body;
+
+        if (!reason) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Alasan penolakan harus diisi" 
+            });
+        }
+
+        const lowongan = await Lowongan.findById(req.params.id);
+
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Lowongan tidak ditemukan" 
+            });
+        }
+
+        // Update status menjadi rejected
+        const rejectedLowongan = await Lowongan.findByIdAndUpdate(
+            req.params.id,
+            {
+                approvalStatus: 'rejected',
+                approvedBy: req.userId,
+                rejectionReason: reason,
+                approvedAt: new Date()
+            },
+            { new: true }
+        ).populate('submittedBy', 'username').populate('approvedBy', 'username');
+
+        res.json({ 
+            success: true, 
+            message: "Lowongan berhasil ditolak",
+            lowongan: rejectedLowongan
+        });
+
+    } catch (error) {
+        console.error('Reject lowongan error:', error);
         res.status(500).json({ 
             success: false, 
             message: "Terjadi kesalahan server" 
