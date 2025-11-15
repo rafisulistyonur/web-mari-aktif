@@ -217,15 +217,26 @@ loadCompetitionsFromDatabase();
 document.addEventListener('DOMContentLoaded', function() {
     loadCompetitionsFromDatabase();
     
-    // Check if there's an ID parameter in URL (from search)
+    // Check if there's an ID parameter in URL (from hashtag click)
     const urlParams = new URLSearchParams(window.location.search);
     const idParam = urlParams.get('id');
     
     if (idParam) {
+        console.log('ID param found in URL:', idParam);
         // Delay untuk memastikan data sudah loaded
         setTimeout(() => {
+            console.log('Available competitions:', Object.keys(competitions));
             if (competitions[idParam]) {
+                console.log('Found competition, showing detail');
                 showDetail(idParam);
+            } else {
+                console.log('Competition not found, waiting longer');
+                // Jika tidak ditemukan, tunggu lebih lama
+                setTimeout(() => {
+                    if (competitions[idParam]) {
+                        showDetail(idParam);
+                    }
+                }, 1000);
             }
         }, 500);
     }
