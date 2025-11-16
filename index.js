@@ -23,7 +23,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Security Middleware
-app.use(helmet()); // Add security headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrcAttr: ["'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            fontSrc: ["'self'", "data:", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+            connectSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"]
+        }
+    }
+}));
 app.use(cors({
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
     credentials: true,
