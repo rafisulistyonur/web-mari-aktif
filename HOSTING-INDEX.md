@@ -40,6 +40,19 @@ Step-by-step untuk DigitalOcean VPS:
 
 ---
 
+### 3.5. **QUICK-START-HOSTINGER.md** (30 Menit Setup)
+Step-by-step untuk Hostinger VPS:
+- Beli & SSH ke server
+- Install Node.js
+- Setup PM2
+- Install Nginx
+- SSL dengan Let's Encrypt
+- Domain pointing
+
+✅ **Recommended untuk budget - termurah + domain included**
+
+---
+
 ### 4. **SSL-SETUP.md** (Quick Reference)
 Ringkas tentang SSL security:
 - Apa yang sudah diimplementasikan
@@ -85,19 +98,23 @@ PERTANYAAN: Mana yang cocok untuk mu?
    → RAILWAY (5 menit)
    → Baca: QUICK-START-RAILWAY.md
 
-2. Mau production dengan full control?
+2. Mau termurah dengan domain included?
+   → HOSTINGER (30 menit, $6/mo + domain)
+   → Baca: QUICK-START-HOSTINGER.md
+
+3. Mau production dengan full control?
    → DIGITALOCEAN (20 menit)
    → Baca: QUICK-START-DIGITALOCEAN.md
 
-3. Mau alternatif mudah & gratis?
+4. Mau alternatif mudah & gratis?
    → RENDER (5-10 menit)
    → Baca: README-DEPLOYMENT.md (lihat Render section)
 
-4. Mau Docker + VPS?
+5. Mau Docker + VPS?
    → Any Linux VPS with Docker
    → Baca: docker-compose.yml + README-DEPLOYMENT.md
 
-5. Mau tahu semua opsi?
+6. Mau tahu semua opsi?
    → Baca: HOSTING-GUIDE.md (lengkap overview)
 ```
 
@@ -139,7 +156,22 @@ PERTANYAAN: Mana yang cocok untuk mu?
 
 ---
 
-### Path 2: DIGITALOCEAN (Best Value)
+### Path 2: HOSTINGER (Termurah - Indonesia Friendly)
+```
+1. Beli VPS Regular
+2. SSH ke server
+3. Install Node.js, Nginx, SSL
+4. Clone repository
+5. Setup PM2
+6. Custom domain
+7. Cost: $6-8/bulan + domain
+```
+
+**Baca: QUICK-START-HOSTINGER.md**
+
+---
+
+### Path 3: DIGITALOCEAN (Best Value)
 ```
 1. Create Droplet
 2. SSH ke server

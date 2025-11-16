@@ -69,7 +69,76 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ---
 
-## 2️⃣ RENDER (Alternatif - Mudah)
+## 2️⃣ HOSTINGER (Budget-Friendly - VPS)
+
+### Kelebihan:
+- ✅ Murah: $6-8/bulan VPS
+- ✅ Full Node.js support
+- ✅ Domain included (cheap)
+- ✅ Free SSL
+- ✅ Support 24/7 Indonesia friendly
+
+### Kekurangan:
+- ⚠️ Setup manual (lebih kompleks)
+- ⚠️ Tidak auto-deploy
+- ⚠️ Perlu basic VPS knowledge
+
+### Langkah-Langkah:
+
+**Step 1: Beli VPS**
+1. Buka https://hostinger.com
+2. Pilih VPS Regular ($6-8/bulan)
+3. Setup dengan Node.js support
+4. Tunggu activation
+
+**Step 2: SSH ke Server**
+```bash
+ssh root@your-ip
+# Password dari email Hostinger
+```
+
+**Step 3: Install Node.js**
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+apt install -y nodejs git
+```
+
+**Step 4: Deploy Application**
+```bash
+cd /home
+git clone https://github.com/YOUR_USERNAME/web-mari-aktif.git
+cd web-mari-aktif
+npm install
+```
+
+**Step 5: Setup MongoDB**
+- Gunakan MongoDB Atlas (free)
+- Get connection string
+- Add ke .env file
+
+**Step 6: Setup PM2 & Nginx**
+```bash
+npm install -g pm2
+pm2 start index.js --name "mari-aktif"
+apt install -y nginx certbot python3-certbot-nginx
+```
+
+**Step 7: Configure SSL**
+```bash
+certbot certonly --standalone -d your-domain.com
+# Update Nginx config dengan SSL
+systemctl restart nginx
+```
+
+**Cost:** $6-8/bulan + domain ~$9/tahun (total sangat murah!)
+
+**Recommended untuk:** Indonesia-based projects, budget-conscious, full control
+
+📖 **Guide lengkap:** `QUICK-START-HOSTINGER.md`
+
+---
+
+## 3️⃣ RENDER (Alternatif - Mudah)
 
 ### Kelebihan:
 - ✅ Free tier available
@@ -231,10 +300,11 @@ Untuk sekarang skip, hanya kalau production skala enterprise.
 
 | Platform | Setup | Cost | SSL | Scaling | Rekomendasi |
 |----------|-------|------|-----|---------|-------------|
-| **Railway** | ⭐⭐ | $5/mo | ✅ | ✅ Auto | **TERBAIK** |
-| **Render** | ⭐⭐ | Free-7 | ✅ | ✅ Auto | ✅ Bagus |
+| **Railway** | ⭐⭐ | $5/mo | ✅ | ✅ Auto | **TERBAIK untuk pemula** |
+| **Hostinger** | ⭐⭐⭐⭐ | $6/mo | ✅ | ⚠️ Manual | **TERBAIK untuk budget** |
+| **Render** | ⭐⭐ | Free-7 | ✅ | ✅ Auto | ✅ Bagus alternatif |
 | **Heroku** | ⭐⭐⭐ | $7/mo | ✅ | ⚠️ Manual | ⚠️ Mahal |
-| **DigitalOcean** | ⭐⭐⭐⭐ | $4/mo | ✅ | ⚠️ Manual | ✅ Best Value |
+| **DigitalOcean** | ⭐⭐⭐⭐ | $4/mo | ✅ | ⚠️ Manual | **TERBAIK untuk value** |
 | **AWS** | ⭐⭐⭐⭐⭐ | Variable | ✅ | ✅ Auto | ⚠️ Complex |
 
 ---
@@ -244,11 +314,11 @@ Untuk sekarang skip, hanya kalau production skala enterprise.
 ### Untuk Pemula:
 → **RAILWAY** (paling mudah, lepas-landas 5 menit)
 
-### Untuk Production Stabil:
-→ **DIGITALOCEAN** (murah + full control)
+### Untuk Budget:
+→ **HOSTINGER** (murah, $6/mo + domain, full control)
 
-### Untuk Learning:
-→ **RENDER** (free tier bagus)
+### Untuk Production Stabil:
+→ **DIGITALOCEAN** (best balance, murah, reliable)
 
 ---
 
