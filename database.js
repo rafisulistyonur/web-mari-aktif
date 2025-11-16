@@ -20,21 +20,17 @@ async function initializeDeveloperAccount() {
         const developerExists = await User.findOne({ username: 'developer' });
         
         if (!developerExists) {
-            // Ambil password dari environment variable, atau gunakan yang default
-            const devPassword = process.env.DEVELOPER_PASSWORD || 'Dev@2024!SecurePass';
-            
             const developer = new User({
                 username: 'developer',
-                nisn: '0000000001',
-                password: devPassword, // Akan di-hash otomatis
+                nisn: '9999999999',
+                password: 'developer123', // Akan di-hash otomatis
                 role: 'developer'
             });
             
             await developer.save();
-            console.log('✓ Developer account created successfully');
-            console.log('⚠️  PENTING: Ubah password developer di environment variable DEVELOPER_PASSWORD');
+            console.log('Developer account created: username=developer, password=developer123');
         } else {
-            console.log('✓ Developer account already exists');
+            console.log('Developer account already exists');
         }
     } catch (error) {
         console.error('Error creating developer account:', error);
