@@ -529,6 +529,11 @@ body {
     font-weight: 500;
     color: #333;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
 .filter-chip:hover {

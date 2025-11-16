@@ -28,8 +28,6 @@ async function loadCompetitionsFromDatabase() {
 // Konversi data dari database ke format yang sesuai
 function buildCompetitionsObject() {
     competitions = {};
-    const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#84cc16', '#a855f7'];
-    const icons = ['🎓', '🔬', '📝', '🎨', '💻', '📐', '✍️', '🏆'];
     
     allCompetitions.forEach((comp, index) => {
         // Hitung status berdasarkan tanggal expired
@@ -39,15 +37,19 @@ function buildCompetitionsObject() {
         const statusBadge = isExpired ? 'EXPIRED' : 'AKTIF';
         const statusClass = isExpired ? 'expired' : 'aktif';
         
+        // Normalize kategori ke filter
+        const categoryFilter = normalizeCategoryToFilter(comp.kategori);
+        const categoryConfig = getCategoryConfig(categoryFilter);
+        
         competitions[comp._id] = {
             id: comp._id,
             title: comp.nama,
             organizer: comp.penyelenggara,
-            logo: icons[index % icons.length],
-            logoColor: colors[index % colors.length],
+            icon: categoryConfig.icon,
+            logoColor: categoryConfig.color,
             location: comp.lokasi,
             category: comp.kategori,
-            categoryFilter: comp.kategori.toLowerCase().replace(/\s+/g, '-'),
+            categoryFilter: categoryFilter,
             prize: comp.hadiah || 'Tidak ada hadiah',
             description: comp.deskripsi,
             requirements: comp.persyaratan,
@@ -104,7 +106,7 @@ function renderCompetitions() {
                     <button class="dev-action-btn delete-btn" title="Hapus Lomba" onclick="event.stopPropagation(); deleteCompetition('${id}')">🗑️</button>
                 </div>
                 <div class="card-content">
-                    <div class="logo" style="background: ${comp.logoColor};">${comp.logo}</div>
+                    <div class="logo" style="background: ${comp.logoColor};"><i class="${comp.icon}"></i></div>
                     <div class="card-info">
                         <div class="card-title">${comp.title}</div>
                         <div class="organizer">${comp.organizer}</div>
@@ -174,7 +176,7 @@ function showDetail(id) {
     renderCompetitions();
     
     // Update detail content
-    document.getElementById('detailLogo').innerHTML = comp.logo;
+    document.getElementById('detailLogo').innerHTML = `<i class="${comp.icon}"></i>`;
     document.getElementById('detailLogo').style.background = comp.logoColor;
     document.getElementById('detailOrganizer').textContent = comp.organizer;
     document.getElementById('detailTitle').textContent = comp.title;
@@ -381,6 +383,9 @@ function updateSavedItemsInSidebar() {
 
 // Update filter chips berdasarkan kategori yang tersedia
 document.addEventListener('DOMContentLoaded', function() {
+    // Generate filter chips
+    generateFilterChips();
+    
     loadCompetitionsFromDatabase();
     
     // Tampilkan tombol sesuai role

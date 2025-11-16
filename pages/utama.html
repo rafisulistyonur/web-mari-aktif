@@ -215,9 +215,9 @@
     </script>
     
     <script>
-        // Initialize avatar dengan inisial
-        document.addEventListener('DOMContentLoaded', function() {
-            const userName = document.getElementById('userName').textContent || 'User';
+        // Function untuk update avatar
+        function updateAvatarDisplay(userName) {
+            if (!userName || userName === 'User') return;
             
             // Update profile avatar
             const profileAvatar = document.getElementById('profileAvatar');
@@ -228,6 +228,13 @@
                 profileAvatar.style.backgroundColor = color;
             }
             
+            // Update profile header background dengan warna yang sama
+            const profileHeader = document.querySelector('.profile-header');
+            if (profileHeader) {
+                const color = getAvatarColor(userName);
+                profileHeader.style.background = `linear-gradient(135deg, ${color} 0%, ${color} 100%)`;
+            }
+            
             // Update post creator avatar
             const postCreatorAvatar = document.getElementById('postCreatorAvatar');
             if (postCreatorAvatar) {
@@ -235,6 +242,51 @@
                 const color = getAvatarColor(userName);
                 postCreatorAvatar.textContent = initials;
                 postCreatorAvatar.style.backgroundColor = color;
+            }
+        }
+        
+        // Initialize avatar dengan inisial
+        document.addEventListener('DOMContentLoaded', function() {
+            // Coba ambil dari localStorage terlebih dahulu, fallback ke HTML element
+            let userName = 'User';
+            
+            try {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    userName = user.username || 'User';
+                }
+            } catch (e) {
+                // Fallback ke HTML element jika localStorage error
+                userName = document.getElementById('userName').textContent || 'User';
+            }
+            
+            // Jika masih default, ambil dari HTML element
+            if (userName === 'User') {
+                userName = document.getElementById('userName').textContent || 'User';
+            }
+            
+            updateAvatarDisplay(userName);
+            
+            // Observer untuk mendengarkan perubahan pada userName element
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                            const newUserName = userNameElement.textContent;
+                            if (newUserName && newUserName !== 'Rayhan Nurindra') { // Ignore default value
+                                updateAvatarDisplay(newUserName);
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(userNameElement, {
+                    childList: true,
+                    subtree: true,
+                    characterData: true
+                });
             }
         });
     </script>

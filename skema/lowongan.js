@@ -26,7 +26,7 @@ const lowonganSchema = new mongoose.Schema({
     },
     kategori: {
         type: String,
-        enum: ['Matematika', 'Fisika', 'Bahasa Indonesia', 'Desain', 'Teknologi', 'Seni', 'Olahraga', 'Lainnya'],
+        enum: ['Matematika', 'Fisika', 'Kimia', 'Biologi', 'Bahasa Indonesia', 'Bahasa Inggris', 'Seni', 'Olahraga', 'Sejarah', 'Informatika', 'Lainnya'],
         required: [true, 'Kategori harus dipilih']
     },
     hadiah: {

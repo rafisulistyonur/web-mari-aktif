@@ -40,16 +40,8 @@
             <!-- Filter Section -->
             <div class="filter-section">
                 <h3>Filter Kategori Lomba</h3>
-                <div class="filter-chips">
-                    <button class="filter-chip active" onclick="toggleFilter('semua')">Semua</button>
-                    <button class="filter-chip" onclick="toggleFilter('matematika')">Matematika</button>
-                    <button class="filter-chip" onclick="toggleFilter('fisika')">Fisika</button>
-                    <button class="filter-chip" onclick="toggleFilter('bahasa-indonesia')">Bahasa Indonesia</button>
-                    <button class="filter-chip" onclick="toggleFilter('desain')">Desain</button>
-                    <button class="filter-chip" onclick="toggleFilter('teknologi')">Teknologi</button>
-                    <button class="filter-chip" onclick="toggleFilter('seni')">Seni</button>
-                    <button class="filter-chip" onclick="toggleFilter('olahraga')">Olahraga</button>
-                    <button class="filter-chip" onclick="toggleFilter('lainnya')">Lainnya</button>
+                <div class="filter-chips" id="filterChips">
+                    <!-- Chips akan di-generate dari JavaScript -->
                 </div>
             </div>
 
@@ -138,6 +130,7 @@
 
     <script src="/public/topNavigasi.js"></script>
     <script src="/public/protected-page.js"></script>
+    <script src="/public/categoryConfig.js"></script>
     <script src="/public/lowongan.js"></script>
     <script src="/public/notification.js"></script>
 </body>

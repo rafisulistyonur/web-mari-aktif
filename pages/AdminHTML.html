@@ -20,11 +20,6 @@
             </div>
 
             <div class="nav-right">
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
-                    <div class="profile-btn"><i class="fas fa-user"></i></div>
-                </div>
-
                 <button class="add-btn" id="logoutBtn"><i class="fas fa-sign-out"></i></button>
             </div>
         </div>
@@ -91,15 +86,8 @@
 
                         <div class="form-group">
                             <label>Kategori *</label>
-                            <select name="kategori" required>
-                                <option value="Matematika">Matematika</option>
-                                <option value="Fisika">Fisika</option>
-                                <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                                <option value="Desain">Desain</option>
-                                <option value="Teknologi">Teknologi</option>
-                                <option value="Seni">Seni</option>
-                                <option value="Olahraga">Olahraga</option>
-                                <option value="Lainnya">Lainnya</option>
+                            <select name="kategori" id="kategoriSelect" required>
+                                <option value="">-- Pilih Kategori --</option>
                             </select>
                         </div>
                     </div>
@@ -136,6 +124,23 @@
     </div>
 
     <script src="/public/protected-page.js"></script>
+    <script src="/public/categoryConfig.js"></script>
     <script src="/public/programlomba.js"></script>
+    
+    <script>
+        // Populate kategori select options
+        document.addEventListener('DOMContentLoaded', function() {
+            const kategoriSelect = document.getElementById('kategoriSelect');
+            if (kategoriSelect) {
+                const categories = getAllCategories();
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.name;
+                    option.textContent = cat.name;
+                    kategoriSelect.appendChild(option);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -20,7 +20,9 @@
 
             <div style="display: flex; gap: 15px; align-items: center;">
                 <button class="icon-btn"><i class="fas fa-bell"></i></button>
-                <div class="profile-btn"><i class="fas fa-user"></i></div>
+                <div class="profile-btn" id="navProfileBtn" style="width: 32px; height: 32px; border-radius: 50%; background-color: #6c757d; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; cursor: pointer;">
+                    <i class="fas fa-user"></i>
+                </div>
             </div>
 
             <button class="add-btn" id="logoutBtn"><i class="fas fa-sign-out"></i></button>
@@ -28,4 +30,37 @@
     </div>
 </nav>
 
+<script src="/public/avatarUtils.js"></script>
 <script src="/public/search.js"></script>
+
+<script>
+    // Update profile button dengan inisial
+    document.addEventListener('DOMContentLoaded', function() {
+        const userStr = localStorage.getItem('currentUser');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                const userName = user.username || 'User';
+                
+                const profileBtn = document.getElementById('navProfileBtn');
+                if (profileBtn) {
+                    const initials = getInitials(userName);
+                    const color = getAvatarColor(userName);
+                    
+                    profileBtn.textContent = initials;
+                    profileBtn.style.backgroundColor = color;
+                    profileBtn.style.fontSize = '14px';
+                    profileBtn.style.fontWeight = '600';
+                    
+                    // Hapus icon user jika ada
+                    const icon = profileBtn.querySelector('i');
+                    if (icon) {
+                        icon.remove();
+                    }
+                }
+            } catch (e) {
+                console.error('Error updating profile button:', e);
+            }
+        }
+    });
+</script>
