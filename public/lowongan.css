@@ -15,7 +15,7 @@ body {
     position: fixed;
     top: 80px;
     right: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e5a8c 0%, #2777b9 100%);
     color: white;
     padding: 12px 24px;
     border-radius: 25px;
@@ -25,15 +25,15 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(39, 119, 185, 0.4);
     transition: all 0.3s ease;
     z-index: 999;
 }
 
 .admin-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 6px 20px rgba(39, 119, 185, 0.6);
+    background: linear-gradient(135deg, #2777b9 0%, #1e5a8c 100%);
 }
 
 .admin-btn i {
@@ -41,6 +41,40 @@ body {
 }
 
 .admin-btn span {
+    font-weight: 600;
+}
+
+/* Tombol Developer Panel */
+.dev-panel-btn {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: linear-gradient(135deg, #1e5a8c 0%, #2777b9 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(39, 119, 185, 0.4);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.dev-panel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(39, 119, 185, 0.6);
+    background: linear-gradient(135deg, #2777b9 0%, #1e5a8c 100%);
+}
+
+.dev-panel-btn i {
+    font-size: 16px;
+}
+
+.dev-panel-btn span {
     font-weight: 600;
 }
 
@@ -191,6 +225,46 @@ body {
     font-size: 13px;
     margin-top: 8px;
     font-weight: 500;
+}
+
+.developer-actions {
+    display: flex;
+    gap: 8px;
+    position: absolute;
+    top: 10px;
+    right: 40px;
+    z-index: 10;
+}
+
+.dev-action-btn {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 6px 10px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+}
+
+.dev-action-btn:hover {
+    background: #f0f0f0;
+    border-color: #999;
+    transform: scale(1.1);
+}
+
+.dev-action-btn.delete-btn:hover {
+    background: #ffebee;
+    border-color: #f44336;
+}
+
+.dev-action-btn.delete-btn:hover {
+    background: #ffebee;
+    border-color: #f44336;
 }
 
 .close-btn {

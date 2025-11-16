@@ -201,6 +201,7 @@
             font-size: 36px;
             color: white;
             cursor: pointer;
+            font-weight: 600;
         }
 
         .profile-edit-icon {
@@ -346,6 +347,7 @@
             color: white;
             font-size: 20px;
             flex-shrink: 0;
+            font-weight: 600;
         }
 
         .post-input-wrapper {
@@ -439,6 +441,7 @@
             justify-content: center;
             color: white;
             font-size: 20px;
+            font-weight: 600;
         }
 
         .post-author-details h3 {

@@ -20,12 +20,54 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Password harus diisi'],
         minlength: [6, 'Password minimal 6 karakter']
     },
+    role: {
+        type: String,
+        enum: ['user', 'developer', 'admin'],
+        default: 'user'
+    },
     savedCompetitions: [{
         competitionId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Lowongan'
         },
         savedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    notifications: [{
+        type: {
+            type: String,
+            enum: ['tag', 'comment', 'like'],
+            default: 'tag'
+        },
+        fromUser: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        fromUsername: {
+            type: String,
+            required: true
+        },
+        postId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            required: true
+        },
+        message: {
+            type: String,
+            required: true
+        },
+        isRead: {
+            type: Boolean,
+            default: false
+        },
+        markedReadAt: {
+            type: Date,
+            default: null
+        },
+        createdAt: {
             type: Date,
             default: Date.now
         }

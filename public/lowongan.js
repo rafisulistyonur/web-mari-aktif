@@ -84,6 +84,10 @@ function renderCompetitions() {
     const container = document.getElementById('competitionList');
     container.innerHTML = '';
     
+    // Ambil role dari localStorage
+    const userRole = localStorage.getItem('userRole');
+    const isDeveloper = userRole === 'developer';
+    
     let count = 0;
     for (const [id, comp] of Object.entries(competitions)) {
         if (activeFilter === 'semua' || comp.categoryFilter === activeFilter) {
@@ -96,7 +100,9 @@ function renderCompetitions() {
             card.onclick = () => showDetail(id);
             
             card.innerHTML = `
-                <button class="close-btn" onclick="event.stopPropagation()">×</button>
+                <div class="developer-actions" id="devActions-${id}" style="display: ${isDeveloper ? 'flex' : 'none'}; position: absolute; top: 10px; right: 40px; gap: 8px; z-index: 10;">
+                    <button class="dev-action-btn delete-btn" title="Hapus Lomba" onclick="event.stopPropagation(); deleteCompetition('${id}')">🗑️</button>
+                </div>
                 <div class="card-content">
                     <div class="logo" style="background: ${comp.logoColor};">${comp.logo}</div>
                     <div class="card-info">
@@ -377,6 +383,19 @@ function updateSavedItemsInSidebar() {
 document.addEventListener('DOMContentLoaded', function() {
     loadCompetitionsFromDatabase();
     
+    // Tampilkan tombol sesuai role
+    const userRole = localStorage.getItem('userRole');
+    const devPanelBtn = document.getElementById('devPanelBtn');
+    const adminPanelBtn = document.getElementById('adminPanelBtn');
+    
+    if (userRole === 'developer') {
+        if (devPanelBtn) devPanelBtn.style.display = 'block';
+        if (adminPanelBtn) adminPanelBtn.style.display = 'none';
+    } else {
+        if (devPanelBtn) devPanelBtn.style.display = 'none';
+        if (adminPanelBtn) adminPanelBtn.style.display = 'block';
+    }
+    
     // Check if there's an ID parameter in URL (from hashtag click)
     const urlParams = new URLSearchParams(window.location.search);
     const idParam = urlParams.get('id');
@@ -401,3 +420,54 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }
 });
+
+// Fungsi untuk edit kompetisi (untuk developer)
+// Fungsi untuk delete kompetisi (untuk developer)
+async function deleteCompetition(competitionId) {
+    const userRole = localStorage.getItem('userRole');
+    
+    if (userRole !== 'developer') {
+        alert('Hanya developer yang dapat menghapus kompetisi!');
+        return;
+    }
+    
+    if (!confirm('Apakah Anda yakin ingin menghapus kompetisi ini?')) {
+        return;
+    }
+    
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        alert('Silakan login terlebih dahulu');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/lowongan/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ competitionId })
+        });
+        
+        console.log('Delete response status:', response.status);
+        const data = await response.json();
+        console.log('Delete response data:', data);
+        
+        if (data.success) {
+            alert('✅ Kompetisi berhasil dihapus!');
+            // Reload data
+            loadCompetitionsFromDatabase();
+            // Close detail panel
+            document.getElementById('leftPanel').classList.remove('shrink');
+            document.getElementById('rightPanel').classList.remove('show');
+            selectedCompId = null;
+        } else {
+            alert('❌ ' + (data.message || 'Gagal menghapus kompetisi'));
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('❌ Terjadi kesalahan saat menghapus kompetisi: ' + error.message);
+    }
+}

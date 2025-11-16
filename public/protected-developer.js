@@ -4,8 +4,8 @@
         return localStorage.getItem('authToken');
     }
 
-    // Fungsi untuk cek autentikasi
-    async function checkAuth() {
+    // Fungsi untuk cek autentikasi dan role developer
+    async function checkDeveloperAuth() {
         const token = getToken();
         
         if (!token) {
@@ -30,7 +30,17 @@
                 return null;
             }
 
-            return data.user;
+            const user = data.user;
+
+            // Cek apakah user adalah developer
+            if (user.role !== 'developer' && user.role !== 'admin') {
+                // User bukan developer, redirect ke beranda
+                alert('Akses ditolak! Hanya developer yang dapat mengakses panel ini.');
+                window.location.href = '/';
+                return null;
+            }
+
+            return user;
         } catch (error) {
             console.error('Auth check error:', error);
             localStorage.removeItem('authToken');
@@ -39,35 +49,13 @@
         }
     }
 
-    // Fungsi untuk ambil jumlah teman
-    async function getConnectionCount() {
-        try {
-            const token = getToken();
-            const response = await fetch('/api/friendship/list', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                return data.total;
-            }
-            return 0;
-        } catch (error) {
-            console.error('Get connections error:', error);
-            return 0;
-        }
-    }
-
-    // Cek autentikasi saat halaman load
-    const user = await checkAuth();
+    // Cek developer auth saat halaman load
+    const user = await checkDeveloperAuth();
     
     if (user) {
-        console.log('User authenticated:', user.username);
+        console.log('Developer authenticated:', user.username);
         
-        // Simpan user info ke localStorage untuk akses di script lain
+        // Simpan user info ke localStorage
         localStorage.setItem('currentUser', JSON.stringify({
             id: user.id,
             username: user.username,
@@ -75,7 +63,6 @@
             role: user.role
         }));
         
-        // Simpan role ke localStorage
         localStorage.setItem('userRole', user.role);
         
         // Update UI dengan info user jika diperlukan
@@ -87,13 +74,6 @@
         const nisnElement = document.getElementById('userNisn');
         if (nisnElement) {
             nisnElement.textContent = user.nisn;
-        }
-
-        // Update jumlah koneksi/teman
-        const connectionCount = await getConnectionCount();
-        const statValueElement = document.querySelector('.stat-value');
-        if (statValueElement) {
-            statValueElement.textContent = connectionCount;
         }
     }
 

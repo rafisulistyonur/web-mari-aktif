@@ -11,13 +11,21 @@
 <body>
     <komponen navbar></komponen>
     
-   <!-- Tombol Admin Panel -->
-<li>
+   <!-- Tombol Developer Panel (hanya untuk developer) -->
+<div id="devPanelBtn" style="display: none;">
+    <a href="/developer" class="dev-panel-btn" title="Developer Panel">
+        <i class="fas fa-code"></i>
+        <span>Developer</span>
+    </a>
+</div>
+
+   <!-- Tombol Admin Panel (untuk user biasa) -->
+<div id="adminPanelBtn">
     <a href="/admin" class="admin-btn" title="Admin Panel">
         <i class="fas fa-user-shield"></i>
         <span>Tambah Lomba</span>
     </a>
-</li>
+</div>
 
     <div class="container">
 
@@ -131,5 +139,6 @@
     <script src="/public/topNavigasi.js"></script>
     <script src="/public/protected-page.js"></script>
     <script src="/public/lowongan.js"></script>
+    <script src="/public/notification.js"></script>
 </body>
 </html>

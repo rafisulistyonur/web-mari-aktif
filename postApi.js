@@ -59,6 +59,71 @@ postRoute.post("/create", verifyToken, async (req, res) => {
         // Populate author info
         await post.populate('author', '-password');
 
+        // Detect @mention dan buat notifikasi (hanya untuk teman)
+        const Friendship = require('./skema/friendship.js');
+        const mentionRegex = /@([^\s@]+(?:\s+[^\s@]+)*)/g;
+        let match;
+        const mentionedUsernames = new Set();
+
+        while ((match = mentionRegex.exec(content)) !== null) {
+            mentionedUsernames.add(match[1]);
+        }
+
+        console.log('Detected mentions:', Array.from(mentionedUsernames));
+
+        // Buat notifikasi untuk setiap user yang di-tag (hanya jika sudah berteman)
+        for (const username of mentionedUsernames) {
+            try {
+                // Cari user berdasarkan username (jangan tag diri sendiri)
+                if (username.toLowerCase() !== req.username.toLowerCase()) {
+                    const taggedUser = await User.findOne({ username: new RegExp('^' + username + '$', 'i') });
+                    
+                    if (taggedUser) {
+                        // Check apakah sudah berteman
+                        const isFriend = await Friendship.findOne({
+                            $or: [
+                                { requester: req.userId, recipient: taggedUser._id, status: 'accepted' },
+                                { requester: taggedUser._id, recipient: req.userId, status: 'accepted' }
+                            ]
+                        });
+
+                        if (isFriend) {
+                            // Check apakah sudah ada notification untuk post ini dari user ini
+                            const existingNotif = taggedUser.notifications.find(n => 
+                                n.postId.toString() === post._id.toString() && 
+                                n.fromUser.toString() === req.userId.toString()
+                            );
+
+                            if (!existingNotif) {
+                                // Tambah notifikasi (hanya jika belum ada)
+                                taggedUser.notifications.push({
+                                    type: 'tag',
+                                    fromUser: req.userId,
+                                    fromUsername: req.username,
+                                    postId: post._id,
+                                    message: `<strong style="color: #2777b9;">@${req.username}</strong> mentioned you in a post`,
+                                    isRead: false
+                                });
+
+                                await taggedUser.save();
+                                console.log(`✓ Notification sent to @${username} (friend)`);
+                            } else {
+                                console.log(`ℹ️ Notification already exists for @${username}`);
+                            }
+                        } else {
+                            console.log(`⚠️ Cannot tag @${username} - not a friend yet`);
+                        }
+                    } else {
+                        console.log(`⚠️ User @${username} not found`);
+                    }
+                } else {
+                    console.log(`⚠️ Skipped tagging self: @${username}`);
+                }
+            } catch (error) {
+                console.error(`Error creating notification for @${username}:`, error);
+            }
+        }
+
         res.status(201).json({ 
             success: true, 
             message: "Postingan berhasil dibuat",

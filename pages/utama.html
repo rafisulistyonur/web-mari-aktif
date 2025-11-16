@@ -6,6 +6,7 @@
     <title>Mari Aktif - Navigation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/public/utama.css">
+    <script src="/public/avatarUtils.js"></script>
 </head>
 <body>
     <komponen navbar></komponen>
@@ -16,8 +17,8 @@
         <aside class="sidebar">
             <div class="profile-card">
                 <div class="profile-header">
-                    <div class="profile-avatar" id="profileAvatar">
-                        <i class="fas fa-user-circle"></i>
+                    <div class="profile-avatar" id="profileAvatar" style="font-size: 36px; font-weight: 600;">
+                        R
                         <div class="profile-edit-icon" onclick="openEditModal()">
                             <i class="fas fa-camera"></i>
                         </div>
@@ -50,8 +51,8 @@
             <!-- Post Creator -->
             <div class="post-creator">
                 <div class="post-input-area">
-                    <div class="post-avatar">
-                        <i class="fas fa-user-circle"></i>
+                    <div class="post-avatar" id="postCreatorAvatar" style="font-size: 20px; font-weight: 600;">
+                        R
                     </div>
                     <div class="post-input-wrapper">
                         <input type="text" class="post-input" placeholder="Mulai buat posting" id="postInputTrigger">
@@ -67,17 +68,14 @@
                 <div class="post-card">
                     <div class="post-header">
                         <div class="post-author-info">
-                            <div class="post-author-avatar">
-                                <i class="fas fa-user-circle"></i>
+                            <div class="post-author-avatar" style="font-size: 20px; font-weight: 600;">
+                                NA
                             </div>
                             <div class="post-author-details">
                                 <h3>Nur Muhammad Ainul Yaqin</h3>
                                 <div class="post-author-meta">menyukai ini</div>
                             </div>
                         </div>
-                        <button class="post-menu-btn">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
                     </div>
                     <div class="post-content">
                         <p>hampir setiap orang aku tanyain cita-citamu apa, pasti jawabannya</p>
@@ -145,6 +143,7 @@
     <script src="/public/topNavigasi.js"></script>
     <script src="/public/protected-page.js"></script>
     <script src="/public/editName.js"></script>
+    <script src="/public/avatarUtils.js"></script>
     <script src="/public/postingSystem.js"></script>
     
     <script>
@@ -214,5 +213,32 @@
         // Load saat halaman buka
         document.addEventListener('DOMContentLoaded', loadSavedItems);
     </script>
+    
+    <script>
+        // Initialize avatar dengan inisial
+        document.addEventListener('DOMContentLoaded', function() {
+            const userName = document.getElementById('userName').textContent || 'User';
+            
+            // Update profile avatar
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (profileAvatar) {
+                const initials = getInitials(userName);
+                const color = getAvatarColor(userName);
+                profileAvatar.textContent = initials;
+                profileAvatar.style.backgroundColor = color;
+            }
+            
+            // Update post creator avatar
+            const postCreatorAvatar = document.getElementById('postCreatorAvatar');
+            if (postCreatorAvatar) {
+                const initials = getInitials(userName);
+                const color = getAvatarColor(userName);
+                postCreatorAvatar.textContent = initials;
+                postCreatorAvatar.style.backgroundColor = color;
+            }
+        });
+    </script>
+    
+    <script src="/public/notification.js"></script>
 </body>
 </html>

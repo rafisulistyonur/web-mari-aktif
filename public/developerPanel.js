@@ -46,7 +46,8 @@ async function loadOverviewData() {
         
         if (statsResponse.ok) {
             const stats = await statsResponse.json();
-            document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+            // Tampilkan format aktif/total untuk users
+            document.getElementById('totalUsers').textContent = stats.totalUsers || '0/0';
             document.getElementById('totalComps').textContent = stats.totalCompetitions || 0;
             document.getElementById('totalPosts').textContent = stats.totalPosts || 0;
         }
@@ -227,6 +228,8 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
     if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
         window.location.href = '/login';
     }
 });

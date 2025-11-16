@@ -3,6 +3,16 @@ function saveToken(token) {
     localStorage.setItem('authToken', token);
 }
 
+// Fungsi untuk menyimpan user role
+function saveUserRole(role) {
+    localStorage.setItem('userRole', role);
+}
+
+// Fungsi untuk mendapatkan user role
+function getUserRole() {
+    return localStorage.getItem('userRole');
+}
+
 // Fungsi untuk mendapatkan token JWT
 function getToken() {
     return localStorage.getItem('authToken');
@@ -11,6 +21,8 @@ function getToken() {
 // Fungsi untuk menghapus token JWT
 function removeToken() {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
 }
 
 // Fungsi untuk redirect ke halaman utama
@@ -65,8 +77,11 @@ if (registerForm) {
             const data = await response.json();
 
             if (data.success) {
-                // Simpan token dan redirect
+                // Simpan token, role, dan userId
                 saveToken(data.token);
+                saveUserRole(data.user.role || 'user');
+                localStorage.setItem('userId', data.user._id);
+                
                 alert('Registrasi berhasil! Selamat datang ' + data.user.username);
                 redirectToHome();
             } else {
@@ -116,10 +131,21 @@ if (loginForm) {
             const data = await response.json();
 
             if (data.success) {
-                // Simpan token dan redirect
+                // Simpan token, role, dan userId
                 saveToken(data.token);
+                saveUserRole(data.user.role);
+                localStorage.setItem('userId', data.user._id);
+                
                 alert('Login berhasil! Selamat datang kembali ' + data.user.username);
-                redirectToHome();
+                
+                // Redirect berdasarkan role
+                if (data.user.role === 'developer') {
+                    window.location.href = '/pages/developerPanel.html';
+                } else if (data.user.role === 'admin') {
+                    window.location.href = '/pages/AdminHTML.html';
+                } else {
+                    window.location.href = '/';
+                }
             } else {
                 showError('loginError', data.message || 'Login gagal');
             }

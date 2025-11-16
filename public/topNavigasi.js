@@ -39,6 +39,8 @@ if (logoutBtn) {
         
         // Hapus token dan redirect ke login
         localStorage.removeItem('authToken');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
         window.location.href = '/login';
     });
 }
