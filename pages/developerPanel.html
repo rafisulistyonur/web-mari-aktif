@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Panel - Mari Aktif Lomba</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/public/admin-style.css">
+    <link rel="stylesheet" href="/public/developer-style.css">
+</head>
+<body>
+    <!-- Navbar Developer -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="logo" style="width: 150px; font-size: 26px; text-align: center;">Mari Aktif</a>
+
+                <ul class="nav-menu">
+                    <li><a href="/developer" class="nav-link active"><i class="fas fa-code"></i><span>Developer</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-right">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                    <div class="profile-btn"><i class="fas fa-user"></i></div>
+                </div>
+
+                <button class="add-btn" id="logoutBtn"><i class="fas fa-sign-out"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1><i class="fas fa-code"></i> Developer Panel - Mari Aktif</h1>
+            <p>Kelola dan Monitor API serta Data Sistem</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('overview')" data-tab="overview">
+                <i class="fas fa-chart-pie"></i> <span>Overview</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('approval')" data-tab="approval">
+                <i class="fas fa-check-circle"></i> <span>Approval</span>
+            </button>
+        </div>
+
+        <!-- Content Sections -->
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #3b82f6;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value" id="totalUsers">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #10b981;">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Competitions</div>
+                        <div class="stat-value" id="totalComps">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f59e0b;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Posts</div>
+                        <div class="stat-value" id="totalPosts">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #ef4444;">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Server Status</div>
+                        <div class="stat-value" id="serverStatus" style="color: #10b981;">Online</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approval Tab -->
+        <div id="approval" class="tab-content">
+            <div class="action-bar">
+                <div>
+                    <strong>Lomba Menunggu Persetujuan: <span id="approvalCount">0</span></strong>
+                </div>
+                <button class="btn btn-primary" onclick="loadApprovalData()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+
+            <div id="approvalContent">
+                <p style="text-align: center; color: #999; padding: 40px;">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/protected-page.js"></script>
+    <script src="/public/developerPanel.js"></script>
+</body>
+</html>

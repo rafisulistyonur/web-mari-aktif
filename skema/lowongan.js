@@ -58,6 +58,24 @@ const lowonganSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    approvalStatus: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+    },
+    approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    rejectionReason: {
+        type: String,
+        default: null
+    },
+    approvedAt: {
+        type: Date,
+        default: null
     }
 }, {
     timestamps: true
