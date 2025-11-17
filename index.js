@@ -212,3 +212,4 @@ app.listen(port, () => {
     cleanupScheduler = scheduleNotificationCleanup();
 });
 
+module.exports = app;
