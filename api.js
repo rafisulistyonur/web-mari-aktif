@@ -38,6 +38,18 @@ route.get("/", (req, res) => {
     res.send("API is working");
 });
 
+// Debug: Check environment and token
+route.post("/debug/check-token", verifyToken, (req, res) => {
+    res.json({
+        success: true,
+        message: "Token valid",
+        userId: req.userId,
+        username: req.username,
+        env: process.env.NODE_ENV,
+        corsOrigin: process.env.CORS_ORIGIN
+    });
+});
+
 // ============ STATISTICS ROUTES (FOR DEVELOPER PANEL) ============
 
 // Ambil statistik total users (aktif dan total), competitions, dan posts
