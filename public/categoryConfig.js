@@ -93,23 +93,35 @@ function normalizeCategoryToFilter(categoryName) {
     
     const normalized = categoryName.toLowerCase().trim();
     
-    // Check direct match
+    // Check direct match with key (e.g., 'bahasa-inggris')
     if (CATEGORY_CONFIG[normalized]) {
         return normalized;
     }
     
-    // Check partial match
+    // Check exact match dengan config name (case-insensitive)
     for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
         if (config.name.toLowerCase() === normalized) {
             return key;
         }
-        // Check if the category name contains this filter name
-        if (normalized.includes(key.replace('-', ' ')) || 
-            key.replace('-', ' ').split(' ').some(word => normalized.includes(word))) {
+    }
+    
+    // Check partial match - tapi harus exact word match untuk menghindari confusion
+    // antara "Bahasa Indonesia" dan "Bahasa Inggris"
+    for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
+        const configNameLower = config.name.toLowerCase();
+        
+        // Jika nama kategori sudah berbentuk "bahasa-inggris" di database
+        if (normalized === key) {
+            return key;
+        }
+        
+        // Jika nama di database adalah "Bahasa Inggris" vs "bahasa-inggris"
+        if (configNameLower === normalized) {
             return key;
         }
     }
     
+    // Fallback ke 'lainnya'
     return 'lainnya';
 }
 

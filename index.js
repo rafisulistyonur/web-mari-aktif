@@ -2,6 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const helmet = require('helmet');
+const cors = require('cors');
+const hpp = require('hpp');
 const route = require('./api.js');
 const friendshipRoute = require('./friendshipApi.js');
 const postRoute = require('./postApi.js');
@@ -19,9 +22,34 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Security Middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrcAttr: ["'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            fontSrc: ["'self'", "data:", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+            connectSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com", "https:"]
+        }
+    }
+}));
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(hpp()); // Prevent HTTP Parameter Pollution
+
+// Trust proxy for HTTPS (important for deployment)
+app.set('trust proxy', 1);
+
 // Session middleware (tetap ada untuk backward compatibility)
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
@@ -29,7 +57,10 @@ app.use(session({
         collectionName: 'sessions'
     }),
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 // 24 jam
+        maxAge: 1000 * 60 * 60 * 24, // 24 jam
+        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+        httpOnly: true, // Prevent XSS attacks
+        sameSite: 'strict' // CSRF protection
     }
 }));
 
@@ -58,6 +89,18 @@ const scheduleNotificationCleanup = () => {
     console.log('✓ Notification cleanup scheduler started (runs every hour)');
     return cleanupInterval;
 };
+
+// ============ HTTPS REDIRECT MIDDLEWARE ============
+// Redirect HTTP ke HTTPS di production
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            res.redirect(`https://${req.header('host')}${req.url}`);
+        } else {
+            next();
+        }
+    });
+}
 
 // Start scheduler setelah server siap
 let cleanupScheduler;
@@ -163,7 +206,10 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     
     // Start notification cleanup scheduler
     cleanupScheduler = scheduleNotificationCleanup();
 });
+
+module.exports = app;
