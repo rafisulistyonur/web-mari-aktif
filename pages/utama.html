@@ -105,7 +105,6 @@
 
     <script src="/public/topNavigasi.js"></script>
     <script src="/public/categoryConfig.js"></script>
-    <script src="/public/search.js"></script>
     <script src="/public/protected-page.js"></script>
     <script src="/public/editName.js"></script>
     <script src="/public/avatarUtils.js"></script>
@@ -147,18 +146,20 @@
                     });
                 }
                 
-                const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#84cc16', '#a855f7'];
-                const icons = ['🎓', '🔬', '📝', '🎨', '💻', '📐', '✍️', '🏆'];
-                
-                container.innerHTML = data.savedCompetitions.map((item, index) => {
+                container.innerHTML = data.savedCompetitions.map((item) => {
                     const comp = competitionsMap[item.id];
-                    const color = comp ? (colors[(Object.keys(competitionsMap).indexOf(item.id)) % colors.length]) : colors[index % colors.length];
-                    const icon = comp ? icons[(Object.keys(competitionsMap).indexOf(item.id)) % icons.length] : icons[index % icons.length];
+                    
+                    // Get category config for dynamic icon and color
+                    let config = { color: '#6b7280', icon: 'fas fa-star' };
+                    if (comp && typeof getCategoryConfig === 'function') {
+                        const filterKey = normalizeCategoryToFilter(comp.kategori);
+                        config = getCategoryConfig(filterKey);
+                    }
                     
                     return `
                         <a href="/lowongan?id=${item.id}" class="sidebar-link" title="${item.title}">
-                            <div style="width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: ${color};">
-                                ${icon}
+                            <div style="width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: ${config.color}; color: white;">
+                                <i class="${config.icon}"></i>
                             </div>
                             <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</span>
                         </a>

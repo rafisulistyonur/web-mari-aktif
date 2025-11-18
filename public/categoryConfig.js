@@ -93,35 +93,30 @@ function normalizeCategoryToFilter(categoryName) {
     
     const normalized = categoryName.toLowerCase().trim();
     
-    // Create a mapping of category names (from database) to filter keys
-    const categoryMapping = {
-        // Direct key matches
-        'matematika': 'matematika',
-        'fisika': 'fisika',
-        'kimia': 'kimia',
-        'biologi': 'biologi',
-        'bahasa indonesia': 'bahasa-indonesia',
-        'bahasa inggris': 'bahasa-inggris',
-        'seni': 'ekonomi', // Map "Seni" to "ekonomi" key
-        'olahraga': 'geografi', // Map "Olahraga" to "geografi" key
-        'sejarah': 'sejarah',
-        'informatika': 'informatika',
-        'lainnya': 'lainnya',
-        // Variants with hyphens
-        'bahasa-indonesia': 'bahasa-indonesia',
-        'bahasa-inggris': 'bahasa-inggris',
-        'bahasa inggris': 'bahasa-inggris',
-        'bahasa indonesia': 'bahasa-indonesia'
-    };
-    
-    // Check if normalized name exists in mapping
-    if (categoryMapping[normalized]) {
-        return categoryMapping[normalized];
+    // Check direct match with key (e.g., 'bahasa-inggris')
+    if (CATEGORY_CONFIG[normalized]) {
+        return normalized;
     }
     
     // Check exact match dengan config name (case-insensitive)
     for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
         if (config.name.toLowerCase() === normalized) {
+            return key;
+        }
+    }
+    
+    // Check partial match - tapi harus exact word match untuk menghindari confusion
+    // antara "Bahasa Indonesia" dan "Bahasa Inggris"
+    for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
+        const configNameLower = config.name.toLowerCase();
+        
+        // Jika nama kategori sudah berbentuk "bahasa-inggris" di database
+        if (normalized === key) {
+            return key;
+        }
+        
+        // Jika nama di database adalah "Bahasa Inggris" vs "bahasa-inggris"
+        if (configNameLower === normalized) {
             return key;
         }
     }
