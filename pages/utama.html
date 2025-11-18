@@ -158,11 +158,11 @@
                     }
                     
                     return `
-                        <a href="/lowongan?id=${item.id}" class="sidebar-link" title="${item.title}">
+                        <a href="/lowongan?id=${item.id}" class="sidebar-link" title="${item.title}" style="padding: 10px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; text-decoration: none; color: #333; font-size: 14px; display: flex; align-items: center; gap: 10px;">
                             <div style="width: 24px; height: 24px; min-width: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: ${config.color}; color: white; flex-shrink: 0;">
                                 <i class="${config.icon}" style="font-size: 12px;"></i>
                             </div>
-                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">${item.title}</span>
                         </a>
                     `;
                 }).join('');
