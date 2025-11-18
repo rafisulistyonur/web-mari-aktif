@@ -208,7 +208,7 @@ function showDetail(id) {
         btn.onclick = () => {
             window.open(comp.linkPendaftaran, '_blank');
         };
-        btn.textContent = '📝 Melamar Mudah';
+        btn.textContent = '📝 Ikuti Lomba';
     });
     
     messageButtons.forEach(btn => {
