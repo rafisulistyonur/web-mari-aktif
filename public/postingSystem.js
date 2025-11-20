@@ -663,9 +663,6 @@ function createPostCard(post, token) {
                 commentEl.innerHTML = `
                     <div style="display: flex; justify-content: space-between;">
                         <strong style="font-size: 12px;">${comment.authorUsername}</strong>
-                        ${token && comment.author._id === getUserIdFromToken(token) ? `
-                            <button onclick="deleteComment('${post._id}', '${comment._id}')" style="background: none; border: none; color: #999; cursor: pointer; font-size: 12px;">×</button>
-                        ` : ''}
                     </div>
                     <p style="font-size: 13px; margin: 3px 0; color: #333;">${escapeHtml(comment.content)}</p>
                     <small style="color: #999; font-size: 11px;">${getTimeAgo(comment.createdAt)}</small>
