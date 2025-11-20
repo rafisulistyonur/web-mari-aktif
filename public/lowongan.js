@@ -6,6 +6,8 @@ let lastClickTime = 0;
 let lastClickedId = null;
 let lastSaveClickTime = 0;
 let lastSaveClickId = null;
+let savingInProgress = false; // ✅ Prevent double save
+let savedCompetitionsMap = {}; // ✅ Track saved state dengan flag
 
 // Load data dari database saat halaman dimuat
 async function loadCompetitionsFromDatabase() {
@@ -229,10 +231,22 @@ function showDetail(id) {
                     'Authorization': `Bearer ${token}`
                 }
             })
-            .then(res => res.json())
+            .then(res => {
+                // ✅ Check HTTP status dulu
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
             .then(data => {
                 if (data.success && data.savedCompetitions) {
-                    const isAlreadySaved = data.savedCompetitions.some(item => item.id === selectedCompId);
+                    // ✅ Convert ID to string untuk comparison
+                    const isAlreadySaved = data.savedCompetitions.some(
+                        item => item.id.toString() === selectedCompId.toString()
+                    );
+                    
+                    // ✅ Update flag state
+                    savedCompetitionsMap[selectedCompId] = isAlreadySaved;
                     
                     if (isAlreadySaved) {
                         btn.classList.remove('btn-primary');
@@ -245,8 +259,17 @@ function showDetail(id) {
                     }
                 }
             })
-            .catch(err => console.error('Error checking saved status:', err));
+            .catch(err => {
+                console.error('Error checking saved status:', err);
+                // ✅ Default ke belum disimpan jika error
+                savedCompetitionsMap[selectedCompId] = false;
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-secondary');
+                btn.textContent = '💾 Simpan';
+            });
         } else {
+            // ✅ Set flag ke false jika tidak ada token
+            savedCompetitionsMap[selectedCompId] = false;
             btn.classList.add('btn-primary');
             btn.classList.remove('btn-secondary');
             btn.textContent = '💾 Simpan';
@@ -284,8 +307,8 @@ function saveCompetition() {
         return;
     }
     
-    const saveBtn = document.getElementById('saveBtn');
-    const isSaved = saveBtn && saveBtn.textContent.includes('Sudah Disimpan');
+    // ✅ Gunakan flag state instead of text check
+    const isSaved = savedCompetitionsMap[selectedCompId];
     
     // Jika sudah disimpan, delete saat di-click
     if (isSaved) {
@@ -299,6 +322,14 @@ function saveCompetition() {
 
 // Cek dan save ke server
 async function checkAndSaveCompetition(competitionId, token) {
+    // ✅ Prevent double save dengan flag
+    if (savingInProgress) {
+        console.warn('Save sudah dalam proses, mencegah double save');
+        return;
+    }
+    
+    savingInProgress = true;
+    
     try {
         const response = await fetch('/api/user/save-competition', {
             method: 'POST',
@@ -309,10 +340,24 @@ async function checkAndSaveCompetition(competitionId, token) {
             body: JSON.stringify({ competitionId })
         });
 
+        // ✅ Check HTTP status dulu sebelum parse JSON
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('❌ Token sudah expired, silakan login ulang');
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
 
         if (data.success) {
             alert('✅ Kompetisi berhasil disimpan!');
+            
+            // ✅ Update flag state
+            savedCompetitionsMap[competitionId] = true;
             
             // Update button state
             const saveBtn = document.getElementById('saveBtn');
@@ -329,13 +374,24 @@ async function checkAndSaveCompetition(competitionId, token) {
         }
     } catch (error) {
         console.error('Save competition error:', error);
-        alert('Terjadi kesalahan saat menyimpan kompetisi');
+        alert('❌ Terjadi kesalahan saat menyimpan kompetisi: ' + error.message);
+    } finally {
+        // ✅ Always reset flag
+        savingInProgress = false;
     }
 }
 
 // Hapus dari server
 async function deleteCompetitionFromServer(competitionId, token) {
     console.log('deleteCompetitionFromServer called with competitionId:', competitionId);
+    
+    // ✅ Prevent double delete dengan flag
+    if (savingInProgress) {
+        console.warn('Delete sudah dalam proses, mencegah double delete');
+        return;
+    }
+    
+    savingInProgress = true;
     
     try {
         const response = await fetch('/api/user/unsave-competition', {
@@ -348,11 +404,26 @@ async function deleteCompetitionFromServer(competitionId, token) {
         });
 
         console.log('Delete response status:', response.status);
+        
+        // ✅ Check HTTP status dulu
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('❌ Token sudah expired, silakan login ulang');
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         console.log('Delete response data:', data);
 
         if (data.success) {
             alert('❌ Kompetisi dihapus dari simpanan');
+            
+            // ✅ Update flag state
+            savedCompetitionsMap[competitionId] = false;
             
             // Reset button
             const saveBtn = document.getElementById('saveBtn');
@@ -369,7 +440,10 @@ async function deleteCompetitionFromServer(competitionId, token) {
         }
     } catch (error) {
         console.error('Delete competition error:', error);
-        alert('Terjadi kesalahan saat menghapus kompetisi');
+        alert('❌ Terjadi kesalahan saat menghapus kompetisi: ' + error.message);
+    } finally {
+        // ✅ Always reset flag
+        savingInProgress = false;
     }
 }
 

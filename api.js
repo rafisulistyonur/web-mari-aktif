@@ -806,9 +806,9 @@ route.post("/user/save-competition", verifyToken, async (req, res) => {
             });
         }
 
-        // Cek apakah sudah disimpan
+        // ✅ Cek apakah sudah disimpan dengan ObjectId comparison
         const isAlreadySaved = user.savedCompetitions.some(
-            item => item.competitionId.toString() === competitionId
+            item => item.competitionId.toString() === competitionId.toString()
         );
 
         if (isAlreadySaved) {
@@ -818,7 +818,7 @@ route.post("/user/save-competition", verifyToken, async (req, res) => {
             });
         }
 
-        // Tambah ke saved competitions
+        // ✅ Tambah ke saved competitions
         user.savedCompetitions.push({ competitionId });
         await user.save();
 
@@ -831,7 +831,8 @@ route.post("/user/save-competition", verifyToken, async (req, res) => {
         console.error('Save competition error:', error);
         res.status(500).json({ 
             success: false, 
-            message: "Terjadi kesalahan server" 
+            message: "Terjadi kesalahan server",
+            error: error.message
         });
     }
 });
@@ -865,10 +866,20 @@ route.post("/user/unsave-competition", verifyToken, async (req, res) => {
             });
         }
 
-        // Hapus dari saved competitions
+        // ✅ Hapus dari saved competitions dengan proper ObjectId comparison
+        const initialLength = user.savedCompetitions.length;
         user.savedCompetitions = user.savedCompetitions.filter(
-            item => item.competitionId.toString() !== competitionId
+            item => item.competitionId.toString() !== competitionId.toString()
         );
+        
+        // ✅ Check apakah ada yang dihapus
+        if (user.savedCompetitions.length === initialLength) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Kompetisi tidak ditemukan di daftar simpanan" 
+            });
+        }
+        
         await user.save();
 
         res.json({ 
@@ -880,7 +891,8 @@ route.post("/user/unsave-competition", verifyToken, async (req, res) => {
         console.error('Unsave competition error:', error);
         res.status(500).json({ 
             success: false, 
-            message: "Terjadi kesalahan server" 
+            message: "Terjadi kesalahan server",
+            error: error.message
         });
     }
 });
