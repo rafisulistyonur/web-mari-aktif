@@ -1067,14 +1067,45 @@
     }
     
     /* LOWONGAN PAGE MOBILE OPTIMIZATION */
+    .container {
+        width: 100vw;
+        padding-top: 70px;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+    
     .left-panel {
-        max-height: 60vh;
+        width: 100%;
         overflow-y: auto;
+        flex: 1;
+        min-height: auto;
+        box-sizing: border-box;
     }
     
     .right-panel {
-        max-height: 40vh;
+        width: 100%;
         position: relative;
+        overflow-y: auto;
+        flex: 1;
+        min-height: auto;
+        box-sizing: border-box;
+        display: none;
+    }
+    
+    .right-panel.show {
+        display: flex;
+    }
+    
+    .header {
+        flex-shrink: 0;
+    }
+    
+    .filter-section {
+        flex-shrink: 0;
+    }
+    
+    .detail-header {
+        flex-shrink: 0;
     }
     
     .detail-content {
