@@ -370,17 +370,51 @@ async function createPost() {
     }
 
     // Validate mentions - hanya bisa mention teman
-    // Regex: @ diikuti text sampai end of line atau sebelum kata yang diawali # atau @
-    // Support multi-word usernames: @rayhan nurindra
-    const mentionRegex = /@([^@#\n]+?)(?=\s+[#@]|\s*$|\n)/g;
-    let match;
+    // Split by word boundary dan cari pattern @word
+    // Support multi-word usernames dengan tracking manually
     const mentionedUsernames = [];
     
-    while ((match = mentionRegex.exec(content)) !== null) {
-        const username = match[1].trim();
-        if (username) {
-            mentionedUsernames.push(username);
+    // Find all @ mentions
+    let mentionMatches = [];
+    const contentLower = content.toLowerCase();
+    let searchStart = 0;
+    
+    while (true) {
+        const atIndex = content.indexOf('@', searchStart);
+        if (atIndex === -1) break;
+        
+        // Check jika before @ ada word boundary (space, start of string, atau newline)
+        const beforeOk = atIndex === 0 || /\s/.test(content[atIndex - 1]);
+        if (!beforeOk) {
+            searchStart = atIndex + 1;
+            continue;
         }
+        
+        // Find end of mention - sampai spasi atau newline
+        let endIndex = atIndex + 1;
+        while (endIndex < content.length && content[endIndex] !== '\n' && content[endIndex] !== '\r') {
+            endIndex++;
+        }
+        
+        // Get mention text (skip @)
+        let mentionText = content.substring(atIndex + 1, endIndex).trim();
+        
+        // Stop at next @ or #
+        const nextAt = mentionText.indexOf('@');
+        const nextHash = mentionText.indexOf('#');
+        
+        if (nextAt !== -1) {
+            mentionText = mentionText.substring(0, nextAt).trim();
+        }
+        if (nextHash !== -1) {
+            mentionText = mentionText.substring(0, nextHash).trim();
+        }
+        
+        if (mentionText) {
+            mentionedUsernames.push(mentionText);
+        }
+        
+        searchStart = endIndex;
     }
     
     // Check apakah semua mentioned users ada di validatedUsers (snapshot saat modal dibuka)
@@ -471,30 +505,95 @@ function parseContentWithHashtags(content) {
     }
     
     let htmlContent = escapeHtml(content);
+    let result = '';
+    let lastIndex = 0;
     
-    // Gunakan regex untuk parsing hashtag dan mention - lebih reliable
-    // Hashtag: # diikuti alphanumeric/underscore (bisa gabung tanpa spasi: #EduTech2025)
-    // Mention: @ diikuti alphanumeric/underscore (1 kata saja: @username)
+    // Parse mentions dan hashtags dengan cara yang lebih predictable
+    // Iterate through string dan process @ dan # yang ditemukan
     
-    let result = htmlContent;
-    
-    // Parse mention (@username atau @rayhan nurindra)
-    // Tangkap dari @ sampai sebelum \n atau sebelum [spasi][#@] atau end of string
-    const mentionRegex = /@([^@#\n]+?)(?=\s+[#@]|\s*$|\n)/g;
-    result = result.replace(mentionRegex, (match, username) => {
-        const trimmedUsername = username.trim();
-        if (trimmedUsername) {
-            return `<span style="color: #2777b9; font-weight: 600;">@${trimmedUsername}</span>`;
+    for (let i = 0; i < htmlContent.length; i++) {
+        const char = htmlContent[i];
+        
+        if (char === '@') {
+            // Check word boundary - must be start or after space
+            const beforeOk = i === 0 || /\s/.test(htmlContent[i - 1]);
+            if (!beforeOk) {
+                continue;
+            }
+            
+            // Add text sebelum @
+            result += htmlContent.substring(lastIndex, i);
+            
+            // Find mention end - sampai space, newline, atau next @ atau #
+            let j = i + 1;
+            while (j < htmlContent.length && htmlContent[j] !== '\n' && htmlContent[j] !== '\r' && htmlContent[j] !== ' ') {
+                j++;
+            }
+            
+            // Get the full mention including spaces after (for multi-word)
+            let mentionEnd = j;
+            let spaceCount = 0;
+            while (mentionEnd < htmlContent.length && htmlContent[mentionEnd] === ' ') {
+                spaceCount++;
+                mentionEnd++;
+                if (spaceCount > 1 || htmlContent[mentionEnd] === '@' || htmlContent[mentionEnd] === '#') {
+                    mentionEnd--;
+                    break;
+                }
+            }
+            
+            // Collect mention text
+            let mentionText = htmlContent.substring(i + 1, mentionEnd).trim();
+            
+            // Stop at @ atau # jika ada
+            const stopAt = Math.min(
+                mentionText.indexOf('@') !== -1 ? mentionText.indexOf('@') : Infinity,
+                mentionText.indexOf('#') !== -1 ? mentionText.indexOf('#') : Infinity
+            );
+            if (stopAt !== Infinity) {
+                mentionText = mentionText.substring(0, stopAt).trim();
+            }
+            
+            if (mentionText) {
+                result += `<span style="color: #2777b9; font-weight: 600;">@${mentionText}</span>`;
+                lastIndex = i + 1 + mentionText.length;
+                i = lastIndex - 1;
+            } else {
+                result += '@';
+                lastIndex = i + 1;
+            }
+        } else if (char === '#') {
+            // Check word boundary
+            const beforeOk = i === 0 || /\s/.test(htmlContent[i - 1]);
+            if (!beforeOk) {
+                continue;
+            }
+            
+            // Add text sebelum #
+            result += htmlContent.substring(lastIndex, i);
+            
+            // Find hashtag end - sampai space atau special char
+            let j = i + 1;
+            while (j < htmlContent.length && /[a-zA-Z0-9_]/.test(htmlContent[j])) {
+                j++;
+            }
+            
+            const tagname = htmlContent.substring(i + 1, j);
+            
+            if (tagname) {
+                const escapedTag = tagname.replace(/'/g, "\\'");
+                result += `<a href="javascript:void(0)" onclick="showCompetitionDetail('${escapedTag}')" style="color: #2777b9; text-decoration: none; font-weight: 600; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">#${tagname}</a>`;
+                lastIndex = j;
+                i = j - 1;
+            } else {
+                result += '#';
+                lastIndex = i + 1;
+            }
         }
-        return match;
-    });
+    }
     
-    // Parse hashtag (#taglomba)
-    const hashtagRegex = /#([a-zA-Z0-9_]+)/g;
-    result = result.replace(hashtagRegex, (match, tagname) => {
-        const escapedTag = tagname.replace(/'/g, "\\'");
-        return `<a href="javascript:void(0)" onclick="showCompetitionDetail('${escapedTag}')" style="color: #2777b9; text-decoration: none; font-weight: 600; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${match}</a>`;
-    });
+    // Add remaining text
+    result += htmlContent.substring(lastIndex);
     
     return result;
 }
