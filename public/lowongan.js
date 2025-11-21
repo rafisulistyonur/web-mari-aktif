@@ -174,6 +174,14 @@ function showDetail(id) {
     leftPanel.classList.add('shrink');
     rightPanel.classList.add('show');
     
+    // Show close button hanya di mobile (viewport width < 768px)
+    const closeBtn = document.getElementById('closeDetailBtn');
+    if (window.innerWidth <= 768) {
+        closeBtn.style.display = 'flex';
+    } else {
+        closeBtn.style.display = 'none';
+    }
+    
     // Re-render to update selected state
     renderCompetitions();
     
@@ -275,6 +283,15 @@ function showDetail(id) {
             btn.textContent = '💾 Simpan';
         }
     });
+}
+
+// Close detail panel (khusus mobile)
+function closeDetailPanel() {
+    document.getElementById('leftPanel').classList.remove('shrink');
+    document.getElementById('rightPanel').classList.remove('show');
+    document.getElementById('closeDetailBtn').style.display = 'none';
+    selectedCompId = null;
+    renderCompetitions();
 }
 
 // Load data saat halaman dimuat
