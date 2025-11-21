@@ -151,9 +151,12 @@ function handleMentionAutocomplete(text, mentionIndex) {
     
     // Filter users berdasarkan search text (support both single dan multi-word username)
     const searchTextLower = mentionText.toLowerCase();
-    const suggestions = allUsers.filter(username => 
-        username.toLowerCase().startsWith(searchTextLower)
-    ).slice(0, 5); // Limit 5 suggestions
+    const suggestions = allUsers.filter(username => {
+        const userLower = username.toLowerCase();
+        // Match: either starts with search text, atau salah satu kata dalam username start dengan search text
+        return userLower.startsWith(searchTextLower) || 
+               userLower.split(/\s+/).some(word => word.startsWith(searchTextLower));
+    }).slice(0, 5); // Limit 5 suggestions
     
     console.log(`📝 Searching for: "@${mentionText}" - Found:`, suggestions);
     
