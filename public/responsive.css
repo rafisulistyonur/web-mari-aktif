@@ -306,6 +306,9 @@
     .container {
         padding-top: 70px;
         flex-direction: column;
+        width: 100vw;
+        min-height: auto;
+        box-sizing: border-box;
     }
     
     .left-panel {
@@ -313,8 +316,9 @@
         min-height: auto;
         border-right: none;
         border-bottom: 1px solid #ddd;
-        max-height: 50vh;
         overflow-y: auto;
+        flex: 1;
+        box-sizing: border-box;
     }
     
     .left-panel.shrink {
@@ -324,6 +328,7 @@
     .header {
         padding: 12px 14px;
         margin-top: 0;
+        flex-shrink: 0;
     }
     
     .header h2 {
@@ -404,15 +409,16 @@
     
     .right-panel {
         width: 100%;
-        max-height: 50vh;
         border-top: 1px solid #ddd;
         overflow-y: auto;
         display: none;
+        flex: 1;
+        min-height: auto;
+        box-sizing: border-box;
     }
     
     .right-panel.show {
         width: 100%;
-        max-height: 100vh;
         display: flex;
         position: relative;
         top: auto;
@@ -420,6 +426,7 @@
         right: auto;
         bottom: auto;
         z-index: 1000;
+        min-height: auto;
     }
     
     .detail-header {
