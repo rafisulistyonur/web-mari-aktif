@@ -594,15 +594,20 @@ body {
         border-bottom: 1px solid #ddd;
         height: auto;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 110px);
     }
     
     .left-panel.shrink {
         width: 40%;
-        display: block;
+        display: flex;
+        flex-direction: column;
         border-right: 1px solid #ddd;
         border-bottom: none;
         max-height: auto;
-        height: auto;
+        height: calc(100vh - 70px);
+        overflow: hidden;
     }
     
     .header {
@@ -653,10 +658,11 @@ body {
     }
     
     .competition-list {
-        max-height: calc(55vh - 150px);
+        max-height: calc(100vh - 380px);
         overflow-y: auto;
         overflow-x: hidden;
         flex: 1;
+        -webkit-overflow-scrolling: touch;
     }
     
     .competition-card {
