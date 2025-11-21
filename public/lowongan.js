@@ -174,6 +174,14 @@ function showDetail(id) {
     leftPanel.classList.add('shrink');
     rightPanel.classList.add('show');
     
+    // Show close button di mobile
+    const closeBtn = document.getElementById('closeDetailBtn');
+    if (window.innerWidth <= 768) {
+        closeBtn.style.display = 'flex';
+    } else {
+        closeBtn.style.display = 'none';
+    }
+    
     // Re-render to update selected state
     renderCompetitions();
     

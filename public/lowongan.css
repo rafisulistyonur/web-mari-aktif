@@ -589,24 +589,20 @@ body {
     
     .left-panel {
         width: 100%;
-        max-height: 55vh;
         border-right: none;
-        border-bottom: 1px solid #ddd;
-        height: auto;
+        border-bottom: none;
+        height: 100vh;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        max-height: calc(100vh - 110px);
     }
     
     .left-panel.shrink {
-        width: 40%;
-        display: flex;
-        flex-direction: column;
-        border-right: 1px solid #ddd;
+        width: 100%;
+        display: none;
+        border-right: none;
         border-bottom: none;
-        max-height: auto;
-        height: calc(100vh - 70px);
+        height: 100vh;
         overflow: hidden;
     }
     
@@ -692,30 +688,40 @@ body {
         max-height: 45vh;
         border-top: 1px solid #ddd;
         overflow: hidden;
-        display: flex;
+        display: none;
         flex-direction: column;
     }
     
     .right-panel.show {
-        width: 60%;
+        width: 100%;
         max-height: 100vh;
-        height: auto;
+        height: 100vh;
         display: flex;
         flex-direction: column;
-        position: relative;
-        top: auto;
-        left: auto;
-        right: auto;
-        bottom: auto;
-        z-index: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1001;
         background: white;
-        border-top: none;
-        border-left: 1px solid #ddd;
+        animation: slideFromRight 0.3s ease-out;
+    }
+    
+    @keyframes slideFromRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
     
     .detail-header {
         padding: 12px 16px;
-        top: 110px;
+        top: 0;
         position: sticky;
         z-index: 10;
         margin-top: 0;
@@ -723,20 +729,24 @@ body {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        background: white;
+        border-bottom: 1px solid #ddd;
     }
     
     #closeDetailBtn {
-        display: none !important;
+        display: flex !important;
         font-size: 24px;
         color: #333;
         padding: 8px;
         min-width: 40px;
         min-height: 40px;
-        display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
         transition: all 0.2s;
+        background: none;
+        border: none;
+        cursor: pointer;
     }
     
     #closeDetailBtn:hover {
@@ -744,8 +754,8 @@ body {
     }
     
     .detail-content {
-        padding: 12px 16px;
-        padding-bottom: 60px;
+        padding: 16px;
+        padding-bottom: 80px;
         overflow-y: auto;
         flex: 1;
         -webkit-overflow-scrolling: touch;
