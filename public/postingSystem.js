@@ -122,14 +122,14 @@ function setupHashtagAutocomplete() {
 
 // Handle mention autocomplete
 function handleMentionAutocomplete(text, mentionIndex) {
-    // Dapatkan text dari @ sampai newline atau sampai next @ atau #
+    // Dapatkan text setelah @ sampai spasi atau newline pertama (seperti hashtag)
     const afterMention = text.substring(mentionIndex + 1);
     
+    // Stop di spasi pertama atau newline
     let endIndex = 0;
     while (endIndex < afterMention.length) {
         const char = afterMention[endIndex];
-        // Stop di newline, @, atau #
-        if (char === '\n' || char === '\r' || char === '@' || char === '#') {
+        if (char === ' ' || char === '\n' || char === '\r') {
             break;
         }
         endIndex++;
@@ -149,7 +149,7 @@ function handleMentionAutocomplete(text, mentionIndex) {
         return;
     }
     
-    // Filter users berdasarkan search text - match dari awal username
+    // Filter users berdasarkan search text (support both single dan multi-word username)
     const searchTextLower = mentionText.toLowerCase();
     const suggestions = allUsers.filter(username => 
         username.toLowerCase().startsWith(searchTextLower)
@@ -379,13 +379,11 @@ async function createPost() {
     }
 
     // Validate mentions - hanya bisa mention teman
-    // Split by word boundary dan cari pattern @word
-    // Support multi-word usernames dengan tracking manually
+    // Tangkap mention sampai spasi pertama (seperti hashtag)
+    // Support multi-word username: jika username "pengembang tes", user harus ketik "@pengembang tes" lalu spasi
     const mentionedUsernames = [];
     
     // Find all @ mentions
-    let mentionMatches = [];
-    const contentLower = content.toLowerCase();
     let searchStart = 0;
     
     while (true) {
@@ -399,25 +397,14 @@ async function createPost() {
             continue;
         }
         
-        // Find end of mention - sampai spasi atau newline
+        // Find end of mention - sampai spasi atau newline (seperti hashtag)
         let endIndex = atIndex + 1;
-        while (endIndex < content.length && content[endIndex] !== '\n' && content[endIndex] !== '\r') {
+        while (endIndex < content.length && content[endIndex] !== ' ' && content[endIndex] !== '\n' && content[endIndex] !== '\r') {
             endIndex++;
         }
         
         // Get mention text (skip @)
         let mentionText = content.substring(atIndex + 1, endIndex).trim();
-        
-        // Stop at next @ or #
-        const nextAt = mentionText.indexOf('@');
-        const nextHash = mentionText.indexOf('#');
-        
-        if (nextAt !== -1) {
-            mentionText = mentionText.substring(0, nextAt).trim();
-        }
-        if (nextHash !== -1) {
-            mentionText = mentionText.substring(0, nextHash).trim();
-        }
         
         if (mentionText) {
             mentionedUsernames.push(mentionText);
@@ -533,17 +520,13 @@ function parseContentWithHashtags(content) {
             // Add text sebelum @
             result += htmlContent.substring(lastIndex, i);
             
-            // Find mention end - sampai newline atau next @ atau #
+            // Find mention end - sampai spasi atau newline (seperti hashtag)
             let j = i + 1;
-            while (j < htmlContent.length && htmlContent[j] !== '\n' && htmlContent[j] !== '\r') {
-                // Stop jika ketemu @ atau # (next mention atau hashtag)
-                if (htmlContent[j] === '@' || htmlContent[j] === '#') {
-                    break;
-                }
+            while (j < htmlContent.length && htmlContent[j] !== ' ' && htmlContent[j] !== '\n' && htmlContent[j] !== '\r') {
                 j++;
             }
             
-            // Collect mention text (termasuk spasi untuk multi-word)
+            // Collect mention text (hanya sampai spasi pertama)
             let mentionText = htmlContent.substring(i + 1, j).trim();
             
             if (mentionText) {
