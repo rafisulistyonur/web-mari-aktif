@@ -1,0 +1,1004 @@
+/* ================================================
+   RESPONSIVE DESIGN SYSTEM - AUTO SCALING
+   ================================================ */
+
+/* Base Scaling System */
+:root {
+    /* Desktop (1920px) */
+    --scale-desktop: 1;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 28px;
+    --font-size-3xl: 32px;
+    
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+    --spacing-2xl: 24px;
+    --spacing-3xl: 32px;
+    
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 20px;
+}
+
+/* ================================================
+   LARGE DESKTOP (1920px and up)
+   ================================================ */
+@media (min-width: 1920px) {
+    :root {
+        --scale-desktop: 1.1;
+    }
+    
+    .main-content {
+        grid-template-columns: 300px 1fr;
+        gap: 24px;
+        padding: 24px;
+    }
+    
+    .profile-card {
+        position: sticky;
+        top: 80px;
+    }
+}
+
+/* ================================================
+   DESKTOP (1200px to 1919px)
+   ================================================ */
+@media (min-width: 1200px) {
+    .main-content {
+        grid-template-columns: 260px 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .sidebar {
+        gap: 15px;
+    }
+    
+    .feed {
+        gap: 15px;
+    }
+    
+    .post-creator {
+        padding: 20px;
+    }
+    
+    .search-input {
+        width: 450px;
+    }
+    
+    .navbar {
+        padding: 0 20px;
+    }
+}
+
+/* ================================================
+   TABLET LANDSCAPE (992px to 1199px)
+   ================================================ */
+@media (max-width: 1199px) and (min-width: 992px) {
+    :root {
+        --font-size-2xl: 24px;
+        --font-size-3xl: 28px;
+        --spacing-2xl: 20px;
+        --spacing-3xl: 24px;
+    }
+    
+    .main-content {
+        grid-template-columns: 220px 1fr;
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .search-input {
+        width: 350px;
+    }
+    
+    .nav-menu {
+        gap: 20px;
+    }
+    
+    .nav-left {
+        gap: 25px;
+    }
+    
+    .nav-link {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .logo {
+        font-size: 24px;
+    }
+    
+    .post-creator {
+        padding: 16px;
+    }
+    
+    .profile-card {
+        position: sticky;
+        top: 80px;
+    }
+}
+
+/* ================================================
+   TABLET PORTRAIT (768px to 991px)
+   ================================================ */
+@media (max-width: 991px) {
+    :root {
+        --font-size-sm: 13px;
+        --font-size-base: 14px;
+        --font-size-lg: 16px;
+        --font-size-xl: 18px;
+        --font-size-2xl: 22px;
+        --spacing-lg: 14px;
+        --spacing-xl: 16px;
+        --spacing-2xl: 18px;
+    }
+    
+    .main-content {
+        grid-template-columns: 180px 1fr;
+        gap: 12px;
+        padding: 12px;
+        margin-top: 70px;
+    }
+    
+    .navbar {
+        padding: 0 12px;
+    }
+    
+    .nav-container {
+        height: 55px;
+    }
+    
+    .search-input {
+        width: 250px;
+        padding: 6px 30px 6px 12px;
+        font-size: 13px;
+    }
+    
+    .nav-left {
+        gap: 20px;
+    }
+    
+    .nav-menu {
+        gap: 15px;
+    }
+    
+    .nav-link {
+        font-size: 11px;
+        padding: 5px 8px;
+        gap: 2px;
+    }
+    
+    .nav-link i {
+        font-size: 18px;
+    }
+    
+    .logo {
+        font-size: 22px;
+    }
+    
+    .post-creator {
+        padding: 14px;
+    }
+    
+    .post-input-area {
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .post-input {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .post-actions {
+        padding-left: 50px;
+        gap: 12px;
+    }
+    
+    .profile-header {
+        height: 70px;
+    }
+    
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+        bottom: -35px;
+        font-size: 32px;
+    }
+    
+    .profile-body {
+        padding: 45px 15px 15px;
+    }
+    
+    .profile-name {
+        font-size: 16px;
+    }
+    
+    .sidebar-section {
+        padding: 12px;
+    }
+    
+    .sidebar-link {
+        gap: 8px;
+        padding: 8px;
+        font-size: 13px;
+    }
+    
+    .post-card {
+        margin-bottom: 12px;
+    }
+    
+    .post-header {
+        padding: 12px 16px;
+    }
+    
+    .post-content {
+        padding: 0 16px 12px;
+        font-size: 13px;
+    }
+    
+    .post-actions-bar {
+        padding: 8px 16px;
+    }
+    
+    .post-action {
+        font-size: 13px;
+        padding: 8px;
+        gap: 6px;
+    }
+    
+    .post-author-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .post-author-details h3 {
+        font-size: 13px;
+    }
+    
+    .post-author-meta {
+        font-size: 11px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-width: 450px;
+        padding: 24px;
+    }
+    
+    .modal-title {
+        font-size: 18px;
+    }
+}
+
+/* ================================================
+   SMALL TABLET / LARGE PHONE (576px to 767px)
+   ================================================ */
+@media (max-width: 767px) and (min-width: 576px) {
+    :root {
+        --font-size-sm: 12px;
+        --font-size-base: 13px;
+        --font-size-lg: 14px;
+        --font-size-xl: 16px;
+        --font-size-2xl: 20px;
+        --spacing-lg: 12px;
+        --spacing-xl: 14px;
+        --spacing-2xl: 16px;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+        margin-top: 65px;
+    }
+    
+    .sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .sidebar-section {
+        grid-column: 1 / -1;
+        padding: 10px;
+    }
+    
+    .navbar {
+        padding: 0 10px;
+    }
+    
+    .nav-container {
+        height: 50px;
+    }
+    
+    .search-input {
+        width: 200px;
+        padding: 6px 28px 6px 12px;
+        font-size: 12px;
+    }
+    
+    .search-icon {
+        right: 10px;
+    }
+    
+    .nav-left {
+        gap: 15px;
+    }
+    
+    .nav-menu {
+        gap: 12px;
+    }
+    
+    .nav-link {
+        font-size: 10px;
+        padding: 4px 6px;
+        gap: 1px;
+    }
+    
+    .nav-link i {
+        font-size: 16px;
+    }
+    
+    .logo {
+        font-size: 20px;
+    }
+    
+    .nav-right {
+        gap: 12px;
+    }
+    
+    .icon-btn {
+        font-size: 18px;
+        padding: 6px;
+    }
+    
+    .post-creator {
+        padding: 12px;
+    }
+    
+    .post-input-area {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    
+    .post-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .post-input {
+        padding: 8px 14px;
+        font-size: 12px;
+        border-radius: 20px;
+    }
+    
+    .post-actions {
+        padding-left: 44px;
+        gap: 10px;
+    }
+    
+    .post-action-btn {
+        font-size: 12px;
+        padding: 8px;
+        gap: 6px;
+    }
+    
+    .post-action-btn i {
+        font-size: 18px;
+    }
+    
+    .profile-card {
+        grid-column: 1 / -1;
+    }
+    
+    .profile-header {
+        height: 60px;
+    }
+    
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+        bottom: -30px;
+        font-size: 28px;
+    }
+    
+    .profile-body {
+        padding: 40px 12px 12px;
+    }
+    
+    .profile-name {
+        font-size: 14px;
+    }
+    
+    .profile-title {
+        font-size: 11px;
+    }
+    
+    .profile-stats {
+        padding: 12px 14px;
+        margin-top: 12px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+    }
+    
+    .stat-value {
+        font-size: 14px;
+    }
+    
+    .sidebar-section-title {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .sidebar-section-title i {
+        font-size: 14px;
+    }
+    
+    .sidebar-link {
+        gap: 6px;
+        padding: 6px;
+        font-size: 12px;
+    }
+    
+    .post-card {
+        margin-bottom: 10px;
+    }
+    
+    .post-header {
+        padding: 10px 12px;
+    }
+    
+    .post-author-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .post-author-details h3 {
+        font-size: 12px;
+    }
+    
+    .post-author-meta {
+        font-size: 10px;
+    }
+    
+    .post-menu-btn {
+        font-size: 18px;
+    }
+    
+    .post-content {
+        padding: 0 12px 10px;
+        font-size: 12px;
+    }
+    
+    .post-actions-bar {
+        padding: 8px 12px;
+    }
+    
+    .post-action {
+        font-size: 12px;
+        padding: 6px;
+        gap: 4px;
+    }
+    
+    .post-action i {
+        font-size: 16px;
+    }
+    
+    .post-stats {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-width: 400px;
+        padding: 20px;
+    }
+    
+    .modal-title {
+        font-size: 16px;
+    }
+    
+    .form-input {
+        padding: 8px;
+        font-size: 12px;
+    }
+    
+    .btn-primary {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+    
+    .modal-close {
+        font-size: 22px;
+    }
+}
+
+/* ================================================
+   MOBILE PHONE (up to 575px)
+   ================================================ */
+@media (max-width: 575px) {
+    :root {
+        --font-size-xs: 10px;
+        --font-size-sm: 11px;
+        --font-size-base: 12px;
+        --font-size-lg: 13px;
+        --font-size-xl: 14px;
+        --font-size-2xl: 18px;
+        --font-size-3xl: 24px;
+        --spacing-xs: 2px;
+        --spacing-sm: 6px;
+        --spacing-md: 8px;
+        --spacing-lg: 10px;
+        --spacing-xl: 12px;
+        --spacing-2xl: 14px;
+    }
+    
+    body {
+        font-size: 12px;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 8px;
+        margin-top: 60px;
+    }
+    
+    .sidebar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .navbar {
+        padding: 0 8px;
+    }
+    
+    .nav-container {
+        height: 48px;
+        gap: 12px;
+    }
+    
+    .logo {
+        font-size: 18px;
+    }
+    
+    .nav-left {
+        gap: 12px;
+    }
+    
+    .nav-menu {
+        gap: 8px;
+    }
+    
+    .nav-link {
+        font-size: 9px;
+        padding: 3px 4px;
+        gap: 1px;
+    }
+    
+    .nav-link i {
+        font-size: 14px;
+    }
+    
+    .search-input {
+        width: 150px;
+        padding: 5px 24px 5px 10px;
+        font-size: 11px;
+    }
+    
+    .search-icon {
+        right: 8px;
+        font-size: 14px;
+    }
+    
+    .nav-right {
+        gap: 10px;
+    }
+    
+    .icon-btn {
+        font-size: 16px;
+        padding: 4px;
+    }
+    
+    .profile-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .add-btn {
+        padding: 8px 14px;
+        font-size: 11px;
+        gap: 4px;
+    }
+    
+    .post-creator {
+        padding: 10px;
+    }
+    
+    .post-input-area {
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .post-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .post-input {
+        padding: 7px 12px;
+        font-size: 11px;
+        border-radius: 18px;
+    }
+    
+    .post-actions {
+        display: none;
+    }
+    
+    .profile-card {
+        grid-column: 1 / -1;
+    }
+    
+    .profile-header {
+        height: 50px;
+    }
+    
+    .profile-avatar {
+        width: 50px;
+        height: 50px;
+        bottom: -25px;
+        font-size: 24px;
+        border: 3px solid white;
+    }
+    
+    .profile-body {
+        padding: 35px 10px 10px;
+    }
+    
+    .profile-name {
+        font-size: 13px;
+        margin-bottom: 3px;
+    }
+    
+    .profile-title {
+        font-size: 10px;
+    }
+    
+    .profile-stats {
+        padding: 10px 12px;
+        margin-top: 8px;
+    }
+    
+    .stat {
+        flex: 1;
+    }
+    
+    .stat-label {
+        font-size: 9px;
+    }
+    
+    .stat-value {
+        font-size: 12px;
+    }
+    
+    .sidebar-section {
+        padding: 10px;
+    }
+    
+    .sidebar-section-title {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+    
+    .sidebar-section-title i {
+        font-size: 12px;
+    }
+    
+    .sidebar-link {
+        gap: 6px;
+        padding: 6px;
+        font-size: 11px;
+    }
+    
+    .post-card {
+        margin-bottom: 8px;
+        border-radius: 6px;
+    }
+    
+    .post-header {
+        padding: 10px;
+    }
+    
+    .post-author-info {
+        gap: 8px;
+    }
+    
+    .post-author-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .post-author-details h3 {
+        font-size: 11px;
+    }
+    
+    .post-author-meta {
+        font-size: 9px;
+    }
+    
+    .post-menu-btn {
+        font-size: 16px;
+        padding: 4px;
+    }
+    
+    .post-content {
+        padding: 0 10px 8px;
+        font-size: 11px;
+    }
+    
+    .post-actions-bar {
+        padding: 8px 10px;
+    }
+    
+    .post-action {
+        font-size: 11px;
+        padding: 6px;
+        gap: 4px;
+    }
+    
+    .post-action i {
+        font-size: 14px;
+    }
+    
+    .post-stats {
+        padding: 8px 10px;
+        font-size: 10px;
+    }
+    
+    .comment-item {
+        padding: 6px;
+        margin-bottom: 8px;
+        font-size: 11px;
+    }
+    
+    .comment-input {
+        padding: 6px 10px;
+        border-radius: 3px;
+        font-size: 11px;
+    }
+    
+    .modal {
+        padding: 10px;
+    }
+    
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px;
+        border-radius: 6px;
+    }
+    
+    .modal-header {
+        margin-bottom: 16px;
+    }
+    
+    .modal-title {
+        font-size: 14px;
+    }
+    
+    .modal-close {
+        font-size: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 12px;
+    }
+    
+    .form-label {
+        margin-bottom: 4px;
+        font-size: 11px;
+    }
+    
+    .form-input {
+        padding: 7px;
+        font-size: 11px;
+        border-radius: 4px;
+    }
+    
+    .btn-primary {
+        padding: 9px 18px;
+        font-size: 11px;
+        border-radius: 18px;
+    }
+    
+    /* Hashtag suggestions */
+    .hashtag-suggestion-item {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    
+    .hashtag-suggestion-name {
+        font-size: 12px;
+    }
+    
+    .hashtag-suggestion-meta {
+        font-size: 10px;
+    }
+}
+
+/* ================================================
+   EXTRA SMALL MOBILE (up to 360px)
+   ================================================ */
+@media (max-width: 360px) {
+    :root {
+        --font-size-xs: 9px;
+        --font-size-sm: 10px;
+        --font-size-base: 11px;
+        --font-size-lg: 12px;
+        --spacing-xs: 2px;
+        --spacing-sm: 4px;
+        --spacing-md: 6px;
+    }
+    
+    .nav-link {
+        font-size: 8px;
+        padding: 2px 3px;
+    }
+    
+    .nav-link i {
+        font-size: 12px;
+    }
+    
+    .search-input {
+        width: 120px;
+        font-size: 10px;
+        padding: 4px 20px 4px 8px;
+    }
+    
+    .logo {
+        font-size: 16px;
+    }
+    
+    .post-creator {
+        padding: 8px;
+    }
+    
+    .post-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .post-input {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+    
+    .profile-avatar {
+        width: 44px;
+        height: 44px;
+        bottom: -22px;
+        font-size: 20px;
+    }
+    
+    .profile-body {
+        padding: 30px 8px 8px;
+    }
+    
+    .profile-name {
+        font-size: 12px;
+    }
+    
+    .modal-content {
+        padding: 14px;
+    }
+}
+
+/* ================================================
+   UTILITY CLASSES
+   ================================================ */
+
+/* Hide elements on specific breakpoints */
+@media (max-width: 767px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .show-mobile {
+        display: none !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .show-tablet {
+        display: none !important;
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f2f2;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Text scaling for better readability */
+@media (max-width: 575px) {
+    body {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+}
+
+/* Touch-friendly elements */
+@media (hover: none) and (pointer: coarse) {
+    button, a, .post-action, .nav-link {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Improved spacing for touch */
+@media (max-width: 767px) {
+    .nav-link, .post-action, button {
+        padding: 10px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar, .sidebar, .modal {
+        display: none;
+    }
+    
+    .main-content {
+        margin-top: 0;
+        grid-template-columns: 1fr;
+    }
+}
