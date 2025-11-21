@@ -283,6 +283,9 @@ function selectHashtagSuggestion(competitionName) {
     
     if (lastHashtagIndex === -1) return;
     
+    // Format nama untuk hashtag: hapus spasi dan gunakan camelCase/PascalCase
+    const hashtagFormat = competitionName.replace(/\s+/g, '');
+    
     const beforeHashtag = text.substring(0, lastHashtagIndex);
     const afterHashtag = text.substring(lastHashtagIndex + 1);
     const afterSpaceIndex = afterHashtag.indexOf(' ');
@@ -297,13 +300,13 @@ function selectHashtagSuggestion(competitionName) {
     }
     
     const afterCompletion = afterHashtag.substring(insertPoint);
-    const newText = beforeHashtag + '#' + competitionName + ' ' + afterCompletion;
+    const newText = beforeHashtag + '#' + hashtagFormat + ' ' + afterCompletion;
     
     textarea.value = newText;
     textarea.focus();
     
     // Set cursor position after inserted text
-    const newCursorPos = beforeHashtag.length + competitionName.length + 2;
+    const newCursorPos = beforeHashtag.length + hashtagFormat.length + 2;
     textarea.setSelectionRange(newCursorPos, newCursorPos);
     
     hideHashtagSuggestions();
