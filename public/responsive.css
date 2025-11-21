@@ -321,52 +321,124 @@
     }
     
     .navbar {
-        padding: 0 10px;
+        padding: 0 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .nav-container {
-        height: 50px;
-    }
-    
-    .search-input {
-        width: 200px;
-        padding: 6px 28px 6px 12px;
-        font-size: 12px;
-    }
-    
-    .search-icon {
-        right: 10px;
+        height: auto;
+        gap: 0;
+        flex-wrap: wrap;
+        align-content: center;
+        padding: 6px 0;
     }
     
     .nav-left {
-        gap: 15px;
-    }
-    
-    .nav-menu {
-        gap: 12px;
-    }
-    
-    .nav-link {
-        font-size: 10px;
-        padding: 4px 6px;
-        gap: 1px;
-    }
-    
-    .nav-link i {
-        font-size: 16px;
+        gap: 10px;
+        order: 1;
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        padding: 4px;
     }
     
     .logo {
-        font-size: 20px;
+        font-size: 16px;
+        white-space: nowrap;
+        min-width: 140px;
+    }
+    
+    .nav-menu {
+        gap: 2px;
+        order: 3;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin: 0;
+        padding: 4px 0;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        margin-top: 4px;
+    }
+    
+    .nav-link {
+        font-size: 11px;
+        padding: 6px 2px;
+        gap: 2px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        color: #ccc;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+        color: #fff;
+        background-color: rgba(255,255,255,0.1);
+    }
+    
+    .nav-link i {
+        font-size: 18px;
+        margin-bottom: 2px;
+    }
+    
+    .search-box {
+        display: none;
+    }
+    
+    .search-input {
+        display: none;
+    }
+    
+    .search-icon {
+        display: none;
     }
     
     .nav-right {
-        gap: 12px;
+        gap: 6px;
+        order: 2;
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        padding: 4px 2px;
     }
     
     .icon-btn {
         font-size: 18px;
-        padding: 6px;
+        padding: 8px;
+        min-width: 38px;
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        color: #ccc;
+    }
+    
+    .icon-btn:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+    
+    .profile-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 12px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+    
+    .add-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        gap: 3px;
+        white-space: nowrap;
+        border-radius: 18px;
+        height: 38px;
     }
     
     .post-creator {
@@ -563,7 +635,7 @@
         grid-template-columns: 1fr;
         gap: 8px;
         padding: 8px;
-        margin-top: 60px;
+        margin-top: 68px;
     }
     
     .sidebar {
@@ -572,67 +644,135 @@
         gap: 8px;
     }
     
+    /* OPTIMIZED MOBILE NAVBAR */
     .navbar {
-        padding: 0 8px;
+        padding: 0 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     
     .nav-container {
-        height: 48px;
-        gap: 12px;
-    }
-    
-    .logo {
-        font-size: 18px;
+        height: auto;
+        gap: 0;
+        flex-wrap: wrap;
+        align-content: center;
+        padding: 6px 0;
     }
     
     .nav-left {
-        gap: 12px;
+        gap: 8px;
+        order: 1;
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        padding: 4px 4px;
+    }
+    
+    .logo {
+        font-size: 14px;
+        white-space: nowrap;
+        min-width: 120px;
+        font-weight: bold;
     }
     
     .nav-menu {
-        gap: 8px;
+        gap: 0;
+        order: 3;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin: 0;
+        padding: 4px 0;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        margin-top: 4px;
     }
     
     .nav-link {
-        font-size: 9px;
-        padding: 3px 4px;
-        gap: 1px;
+        font-size: 10px;
+        padding: 6px 2px;
+        gap: 2px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        color: #ccc;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        line-height: 1.2;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+        color: #fff;
+        background-color: rgba(255,255,255,0.1);
     }
     
     .nav-link i {
-        font-size: 14px;
-    }
-    
-    .search-input {
-        width: 150px;
-        padding: 5px 24px 5px 10px;
-        font-size: 11px;
-    }
-    
-    .search-icon {
-        right: 8px;
-        font-size: 14px;
+        font-size: 18px;
+        margin-bottom: 2px;
+        display: block;
     }
     
     .nav-right {
-        gap: 10px;
+        gap: 4px;
+        order: 2;
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        padding: 4px 2px;
+    }
+    
+    .search-box {
+        display: none !important;
+    }
+    
+    .search-input {
+        display: none !important;
+    }
+    
+    .search-icon {
+        display: none !important;
     }
     
     .icon-btn {
-        font-size: 16px;
-        padding: 4px;
+        font-size: 18px;
+        padding: 8px;
+        min-width: 38px;
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        color: #ccc;
+    }
+    
+    .icon-btn:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: #fff;
     }
     
     .profile-btn {
-        width: 28px;
-        height: 28px;
+        width: 34px;
+        height: 34px;
         font-size: 12px;
+        min-width: 34px;
+        min-height: 34px;
+        padding: 0;
     }
     
     .add-btn {
-        padding: 8px 14px;
+        padding: 7px 10px;
         font-size: 11px;
-        gap: 4px;
+        gap: 3px;
+        white-space: nowrap;
+        border-radius: 16px;
+        height: 34px;
+    }
+    
+    .add-btn i {
+        font-size: 13px;
     }
     
     .post-creator {
