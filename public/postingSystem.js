@@ -468,83 +468,24 @@ function parseContentWithHashtags(content) {
     
     let htmlContent = escapeHtml(content);
     
-    // Parse manual untuk handle hashtags dan mentions
-    let result = '';
-    let i = 0;
+    // Gunakan regex untuk parsing hashtag dan mention - lebih reliable
+    // Hashtag: # diikuti alphanumeric/underscore (bisa gabung tanpa spasi: #EduTech2025)
+    // Mention: @ diikuti alphanumeric/underscore (1 kata saja: @username)
     
-    while (i < htmlContent.length) {
-        // Cari tanda # atau @
-        const hashIndex = htmlContent.indexOf('#', i);
-        const mentionIndex = htmlContent.indexOf('@', i);
-        
-        let nextSymbolIndex = -1;
-        let symbol = '';
-        
-        if (hashIndex !== -1 && mentionIndex !== -1) {
-            if (hashIndex < mentionIndex) {
-                nextSymbolIndex = hashIndex;
-                symbol = '#';
-            } else {
-                nextSymbolIndex = mentionIndex;
-                symbol = '@';
-            }
-        } else if (hashIndex !== -1) {
-            nextSymbolIndex = hashIndex;
-            symbol = '#';
-        } else if (mentionIndex !== -1) {
-            nextSymbolIndex = mentionIndex;
-            symbol = '@';
-        }
-        
-        if (nextSymbolIndex === -1) {
-            // Tidak ada # atau @ lagi, tambah sisa string
-            result += htmlContent.substring(i);
-            break;
-        }
-        
-        // Tambah text sebelum symbol
-        result += htmlContent.substring(i, nextSymbolIndex);
-        
-        // Ambil text setelah symbol sampai spasi atau newline
-        let j = nextSymbolIndex + 1;
-        let tagText = '';
-        
-        // Collect karakter sampai spasi, newline, atau special character
-        while (j < htmlContent.length) {
-            const char = htmlContent[j];
-            
-            // Stop di whitespace (spasi, newline)
-            if (char === ' ' || char === '\n' || char === '\r' || char === '\t') {
-                break;
-            }
-            
-            // Stop jika ketemu karakter special
-            if (char === '<' || char === '>' || char === '@' || char === '#') {
-                break;
-            }
-            
-            tagText += char;
-            j++;
-        }
-        
-        tagText = tagText.trim();
-        
-        if (tagText) {
-            // Buat link berdasarkan symbol
-            if (symbol === '#') {
-                const escapedTag = tagText.replace(/'/g, "\\'");
-                result += `<a href="javascript:void(0)" onclick="showCompetitionDetail('${escapedTag}')" style="color: #2777b9; text-decoration: none; font-weight: 600; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">#${tagText}</a>`;
-            } else if (symbol === '@') {
-                // Mention: hanya text biasa, bukan link (no profile feature)
-                result += `<span style="color: #2777b9; font-weight: 600;">@${tagText}</span>`;
-            }
-            i = j;
-        } else {
-            // Jika tidak ada text setelah symbol, tambah symbol biasa
-            result += symbol;
-            i = nextSymbolIndex + 1;
-        }
-    }
+    let result = htmlContent;
+    
+    // Parse mention (@username)
+    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+    result = result.replace(mentionRegex, (match, username) => {
+        return `<span style="color: #2777b9; font-weight: 600;">${match}</span>`;
+    });
+    
+    // Parse hashtag (#taglomba)
+    const hashtagRegex = /#([a-zA-Z0-9_]+)/g;
+    result = result.replace(hashtagRegex, (match, tagname) => {
+        const escapedTag = tagname.replace(/'/g, "\\'");
+        return `<a href="javascript:void(0)" onclick="showCompetitionDetail('${escapedTag}')" style="color: #2777b9; text-decoration: none; font-weight: 600; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${match}</a>`;
+    });
     
     return result;
 }
