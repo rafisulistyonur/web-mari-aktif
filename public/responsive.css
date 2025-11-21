@@ -302,11 +302,178 @@
         --spacing-2xl: 16px;
     }
     
+    /* LOWONGAN PAGE OPTIMIZATION */
+    .container {
+        padding-top: 70px;
+        flex-direction: column;
+    }
+    
+    .left-panel {
+        width: 100%;
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+    
+    .left-panel.shrink {
+        display: none;
+    }
+    
+    .header {
+        padding: 12px 14px;
+        margin-top: 0;
+    }
+    
+    .header h2 {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    
+    .header p {
+        font-size: 12px;
+    }
+    
+    .filter-section {
+        padding: 10px 14px;
+        flex-shrink: 0;
+    }
+    
+    .filter-section h3 {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .filter-chips {
+        gap: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        max-height: 80px;
+        overflow-y: auto;
+    }
+    
+    .filter-chip {
+        padding: 6px 12px;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+    
+    .competition-card {
+        padding: 12px 14px;
+    }
+    
+    .card-content {
+        gap: 10px;
+    }
+    
+    .logo {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+    
+    .card-info {
+        padding-right: 10px;
+    }
+    
+    .card-title {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    
+    .organizer {
+        font-size: 13px;
+    }
+    
+    .location {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    
+    .deadline {
+        font-size: 12px;
+        margin-top: 6px;
+    }
+    
+    .status-badge {
+        font-size: 12px;
+        padding: 4px 10px;
+        margin-top: 6px;
+    }
+    
+    .right-panel {
+        width: 100%;
+        max-height: 50vh;
+        border-top: 1px solid #ddd;
+        overflow-y: auto;
+        display: none;
+    }
+    
+    .right-panel.show {
+        width: 100%;
+        max-height: 100vh;
+        display: flex;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        z-index: 1000;
+    }
+    
+    .detail-header {
+        padding: 12px 14px;
+        margin-top: 0;
+    }
+    
+    .detail-content {
+        padding: 14px;
+        padding-bottom: 80px;
+    }
+    
+    .detail-title {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .detail-meta {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .action-buttons {
+        gap: 8px;
+        margin: 12px 0;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 12px;
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .about-section {
+        margin: 12px 0;
+    }
+    
+    .about-section h3 {
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+    
+    .about-section p {
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+    
     .main-content {
         grid-template-columns: 1fr;
         gap: 10px;
         padding: 10px;
-        margin-top: 100px;
+        margin-top: 80px;
     }
     
     .sidebar {
