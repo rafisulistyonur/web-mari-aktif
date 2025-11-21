@@ -654,7 +654,7 @@ body {
     }
     
     .competition-list {
-        max-height: calc(100vh - 380px);
+        max-height: none;
         overflow-y: auto;
         overflow-x: hidden;
         flex: 1;
