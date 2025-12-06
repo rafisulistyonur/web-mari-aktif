@@ -61,22 +61,37 @@ postRoute.post("/create", verifyToken, async (req, res) => {
 
         // Detect @mention dan buat notifikasi (hanya untuk teman)
         const Friendship = require('./skema/friendship.js');
-        const mentionRegex = /@([^\s@]+(?:\s+[^\s@]+)*)/g;
+        // Regex untuk capture mention sampai spasi atau newline (format: @word)
+        const mentionRegex = /@([^\s@]+)/g;
         let match;
-        const mentionedUsernames = new Set();
+        const mentionedMentions = []; // Store @word yang ditemukan
 
         while ((match = mentionRegex.exec(content)) !== null) {
-            mentionedUsernames.add(match[1]);
+            mentionedMentions.push(match[1]);
         }
 
-        console.log('Detected mentions:', Array.from(mentionedUsernames));
+        console.log('Detected mentions:', mentionedMentions);
 
-        // Buat notifikasi untuk setiap user yang di-tag (hanya jika sudah berteman)
-        for (const username of mentionedUsernames) {
+        // Buat notifikasi untuk setiap mention yang di-tag (hanya jika sudah berteman)
+        for (const mention of mentionedMentions) {
             try {
-                // Cari user berdasarkan username (jangan tag diri sendiri)
-                if (username.toLowerCase() !== req.username.toLowerCase()) {
-                    const taggedUser = await User.findOne({ username: new RegExp('^' + username + '$', 'i') });
+                // Normalize mention (remove spaces) untuk matching dengan username yang punya spasi
+                const mentionNormalized = mention.toLowerCase().replace(/\s+/g, '');
+                
+                // Jangan tag diri sendiri
+                if (mention.toLowerCase() !== req.username.toLowerCase()) {
+                    // Cari user: match username dengan atau tanpa spasi
+                    let taggedUser = await User.findOne({ 
+                        username: new RegExp('^' + mention + '$', 'i') 
+                    });
+                    
+                    // Jika tidak ketemu, coba match dengan normalize spaces
+                    if (!taggedUser) {
+                        const allUsers = await User.find({});
+                        taggedUser = allUsers.find(u => 
+                            u.username.toLowerCase().replace(/\s+/g, '') === mentionNormalized
+                        );
+                    }
                     
                     if (taggedUser) {
                         // Check apakah sudah berteman
@@ -106,7 +121,7 @@ postRoute.post("/create", verifyToken, async (req, res) => {
                                 });
 
                                 await taggedUser.save();
-                                console.log(`✓ Notification sent to @${username} (friend)`);
+                                console.log(`✓ Notification sent to @${taggedUser.username} (friend)`);
                             } else {
                                 console.log(`ℹ️ Notification already exists for @${username}`);
                             }

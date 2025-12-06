@@ -8,6 +8,7 @@ function getToken() {
 // Store kompetisi dan users untuk autocomplete
 let allCompetitions = [];
 let allUsers = [];
+let validatedUsers = []; // Store users yang divalidasi saat akan membuat posting
 
 // Load semua users untuk mention autocomplete
 async function loadUsersForMention() {
@@ -121,17 +122,22 @@ function setupHashtagAutocomplete() {
 
 // Handle mention autocomplete
 function handleMentionAutocomplete(text, mentionIndex) {
-    // Cek apakah ada spasi atau newline setelah @ (jika ada, close suggestions)
+    // Dapatkan text setelah @ sampai spasi atau newline pertama (seperti hashtag)
     const afterMention = text.substring(mentionIndex + 1);
-    if (afterMention.includes(' ') || afterMention.includes('\n')) {
-        hideMentionSuggestions();
-        return;
+    
+    // Stop di spasi pertama atau newline
+    let endIndex = 0;
+    while (endIndex < afterMention.length) {
+        const char = afterMention[endIndex];
+        if (char === ' ' || char === '\n' || char === '\r') {
+            break;
+        }
+        endIndex++;
     }
     
-    // Dapatkan text setelah @
-    const searchText = afterMention.toLowerCase();
+    const mentionText = afterMention.substring(0, endIndex).trim();
     
-    if (searchText.length === 0) {
+    if (mentionText.length === 0) {
         // Show all users saat @ pertama kali ditekan
         console.log('@ pressed - showing all users:', allUsers);
         if (allUsers.length > 0) {
@@ -143,18 +149,22 @@ function handleMentionAutocomplete(text, mentionIndex) {
         return;
     }
     
-    // Filter users berdasarkan search text
-    const suggestions = allUsers.filter(username => 
-        username.toLowerCase().includes(searchText)
-    ).slice(0, 5); // Limit 5 suggestions
+    // Filter users berdasarkan search text (support both single dan multi-word username)
+    const searchTextLower = mentionText.toLowerCase();
+    const suggestions = allUsers.filter(username => {
+        const userLower = username.toLowerCase();
+        // Match: either starts with search text, atau salah satu kata dalam username start dengan search text
+        return userLower.startsWith(searchTextLower) || 
+               userLower.split(/\s+/).some(word => word.startsWith(searchTextLower));
+    }).slice(0, 5); // Limit 5 suggestions
     
-    console.log(`📝 Searching for: "@${searchText}" - Found:`, suggestions);
+    console.log(`📝 Searching for: "@${mentionText}" - Found:`, suggestions);
     
     if (suggestions.length > 0) {
         showMentionSuggestions(suggestions, mentionIndex);
         hideHashtagSuggestions();
     } else {
-        console.log(`ℹ️ No users found matching "@${searchText}"`);
+        console.log(`ℹ️ No users found matching "@${mentionText}"`);
         hideMentionSuggestions();
         hideHashtagSuggestions();
     }
@@ -204,6 +214,9 @@ function selectMentionSuggestion(username) {
     
     if (lastMentionIndex === -1) return;
     
+    // Format username untuk mention: hapus spasi (seperti hashtag)
+    const mentionFormat = username.replace(/\s+/g, '');
+    
     const beforeMention = text.substring(0, lastMentionIndex);
     const afterMention = text.substring(lastMentionIndex + 1);
     const afterSpaceIndex = afterMention.indexOf(' ');
@@ -218,13 +231,13 @@ function selectMentionSuggestion(username) {
     }
     
     const afterCompletion = afterMention.substring(insertPoint);
-    const newText = beforeMention + '@' + username + ' ' + afterCompletion;
+    const newText = beforeMention + '@' + mentionFormat + ' ' + afterCompletion;
     
     textarea.value = newText;
     textarea.focus();
     
     // Set cursor position after inserted text
-    const newCursorPos = beforeMention.length + username.length + 2;
+    const newCursorPos = beforeMention.length + mentionFormat.length + 2;
     textarea.setSelectionRange(newCursorPos, newCursorPos);
     
     hideMentionSuggestions();
@@ -282,6 +295,9 @@ function selectHashtagSuggestion(competitionName) {
     
     if (lastHashtagIndex === -1) return;
     
+    // Format nama untuk hashtag: hapus spasi dan gunakan camelCase/PascalCase
+    const hashtagFormat = competitionName.replace(/\s+/g, '');
+    
     const beforeHashtag = text.substring(0, lastHashtagIndex);
     const afterHashtag = text.substring(lastHashtagIndex + 1);
     const afterSpaceIndex = afterHashtag.indexOf(' ');
@@ -296,13 +312,13 @@ function selectHashtagSuggestion(competitionName) {
     }
     
     const afterCompletion = afterHashtag.substring(insertPoint);
-    const newText = beforeHashtag + '#' + competitionName + ' ' + afterCompletion;
+    const newText = beforeHashtag + '#' + hashtagFormat + ' ' + afterCompletion;
     
     textarea.value = newText;
     textarea.focus();
     
     // Set cursor position after inserted text
-    const newCursorPos = beforeHashtag.length + competitionName.length + 2;
+    const newCursorPos = beforeHashtag.length + hashtagFormat.length + 2;
     textarea.setSelectionRange(newCursorPos, newCursorPos);
     
     hideHashtagSuggestions();
@@ -329,7 +345,12 @@ function openPostModal() {
     }
     
     // Always reload users untuk memastikan data terbaru
-    loadUsersForMention();
+    // dan simpan snapshot untuk validasi saat submit
+    loadUsersForMention().then(() => {
+        // Buat snapshot users untuk validasi konsisten saat posting dibuat
+        validatedUsers = [...allUsers];
+        console.log('✓ Snapshot users for validation created:', validatedUsers);
+    });
     
     setTimeout(() => {
         setupHashtagAutocomplete();
@@ -364,19 +385,51 @@ async function createPost() {
     }
 
     // Validate mentions - hanya bisa mention teman
-    const mentionRegex = /@([^\s@]+(?:\s+[^\s@]+)*)/g;
-    let match;
+    // Tangkap mention sampai spasi pertama (seperti hashtag)
+    // Support multi-word username: jika username "pengembang tes", user harus ketik "@pengembang tes" lalu spasi
     const mentionedUsernames = [];
     
-    while ((match = mentionRegex.exec(content)) !== null) {
-        mentionedUsernames.push(match[1]);
+    // Find all @ mentions
+    let searchStart = 0;
+    
+    while (true) {
+        const atIndex = content.indexOf('@', searchStart);
+        if (atIndex === -1) break;
+        
+        // Check jika before @ ada word boundary (space, start of string, atau newline)
+        const beforeOk = atIndex === 0 || /\s/.test(content[atIndex - 1]);
+        if (!beforeOk) {
+            searchStart = atIndex + 1;
+            continue;
+        }
+        
+        // Find end of mention - sampai spasi atau newline (seperti hashtag)
+        let endIndex = atIndex + 1;
+        while (endIndex < content.length && content[endIndex] !== ' ' && content[endIndex] !== '\n' && content[endIndex] !== '\r') {
+            endIndex++;
+        }
+        
+        // Get mention text (skip @)
+        let mentionText = content.substring(atIndex + 1, endIndex).trim();
+        
+        if (mentionText) {
+            mentionedUsernames.push(mentionText);
+        }
+        
+        searchStart = endIndex;
     }
     
-    // Check apakah semua mentioned users ada di allUsers (teman) - case insensitive
-    const allUsersLowercase = allUsers.map(u => u.toLowerCase());
-    const invalidMentions = mentionedUsernames.filter(username => 
-        !allUsersLowercase.includes(username.toLowerCase())
-    );
+    // Check apakah semua mentioned users ada di validatedUsers (snapshot saat modal dibuka)
+    // Case insensitive comparison + remove spaces untuk match (karena mention format tanpa spasi)
+    const validatedUsersLowercase = validatedUsers.map(u => ({
+        original: u,
+        normalized: u.toLowerCase().replace(/\s+/g, '') // Remove spaces untuk matching
+    }));
+    
+    const invalidMentions = mentionedUsernames.filter(username => {
+        const normalizedMention = username.toLowerCase().replace(/\s+/g, '');
+        return !validatedUsersLowercase.some(u => u.normalized === normalizedMention);
+    });
     
     if (invalidMentions.length > 0) {
         alert(`❌ Anda hanya bisa mention teman yang sudah ditambahkan.\n\nUser tidak valid: @${invalidMentions.join(', @')}\n\nTambahkan mereka sebagai teman terlebih dahulu.`);
@@ -386,6 +439,7 @@ async function createPost() {
     try {
         console.log('📤 Creating post with content:', content);
         console.log('✓ All mentions are valid friends:', mentionedUsernames);
+        console.log('✓ Using validated users snapshot:', validatedUsers);
         
         const response = await fetch('/api/post/create', {
             method: 'POST',
@@ -458,96 +512,74 @@ function parseContentWithHashtags(content) {
     }
     
     let htmlContent = escapeHtml(content);
-    
-    // Parse manual untuk handle multi-word hashtags dan mentions
     let result = '';
-    let i = 0;
+    let lastIndex = 0;
     
-    while (i < htmlContent.length) {
-        // Cari tanda # atau @
-        const hashIndex = htmlContent.indexOf('#', i);
-        const mentionIndex = htmlContent.indexOf('@', i);
+    // Parse mentions dan hashtags dengan cara yang lebih predictable
+    // Iterate through string dan process @ dan # yang ditemukan
+    
+    for (let i = 0; i < htmlContent.length; i++) {
+        const char = htmlContent[i];
         
-        let nextSymbolIndex = -1;
-        let symbol = '';
-        
-        if (hashIndex !== -1 && mentionIndex !== -1) {
-            if (hashIndex < mentionIndex) {
-                nextSymbolIndex = hashIndex;
-                symbol = '#';
+        if (char === '@') {
+            // Check word boundary - must be start or after space
+            const beforeOk = i === 0 || /\s/.test(htmlContent[i - 1]);
+            if (!beforeOk) {
+                continue;
+            }
+            
+            // Add text sebelum @
+            result += htmlContent.substring(lastIndex, i);
+            
+            // Find mention end - sampai spasi atau newline (seperti hashtag)
+            let j = i + 1;
+            while (j < htmlContent.length && htmlContent[j] !== ' ' && htmlContent[j] !== '\n' && htmlContent[j] !== '\r') {
+                j++;
+            }
+            
+            // Collect mention text (hanya sampai spasi pertama)
+            let mentionText = htmlContent.substring(i + 1, j).trim();
+            
+            if (mentionText) {
+                result += `<span style="color: #2777b9; font-weight: 600;">@${mentionText}</span>`;
+                lastIndex = i + 1 + mentionText.length;
+                i = lastIndex - 1;
             } else {
-                nextSymbolIndex = mentionIndex;
-                symbol = '@';
+                result += '@';
+                lastIndex = i + 1;
             }
-        } else if (hashIndex !== -1) {
-            nextSymbolIndex = hashIndex;
-            symbol = '#';
-        } else if (mentionIndex !== -1) {
-            nextSymbolIndex = mentionIndex;
-            symbol = '@';
-        }
-        
-        if (nextSymbolIndex === -1) {
-            // Tidak ada # atau @ lagi, tambah sisa string
-            result += htmlContent.substring(i);
-            break;
-        }
-        
-        // Tambah text sebelum symbol
-        result += htmlContent.substring(i, nextSymbolIndex);
-        
-        // Ambil text setelah symbol sampai double space atau end of string
-        let j = nextSymbolIndex + 1;
-        let tagText = '';
-        let spaceCount = 0;
-        
-        // Collect semua character sampai double space atau newline atau end
-        while (j < htmlContent.length) {
-            const char = htmlContent[j];
-            
-            // Stop di newline
-            if (char === '\n' || char === '\r') {
-                break;
+        } else if (char === '#') {
+            // Check word boundary
+            const beforeOk = i === 0 || /\s/.test(htmlContent[i - 1]);
+            if (!beforeOk) {
+                continue;
             }
             
-            // Track consecutive spaces
-            if (char === ' ') {
-                spaceCount++;
-                if (spaceCount >= 2) {
-                    // Double space found, stop collecting
-                    break;
-                }
+            // Add text sebelum #
+            result += htmlContent.substring(lastIndex, i);
+            
+            // Find hashtag end - sampai space atau special char
+            let j = i + 1;
+            while (j < htmlContent.length && /[a-zA-Z0-9_]/.test(htmlContent[j])) {
+                j++;
+            }
+            
+            const tagname = htmlContent.substring(i + 1, j);
+            
+            if (tagname) {
+                const escapedTag = tagname.replace(/'/g, "\\'");
+                result += `<a href="javascript:void(0)" onclick="showCompetitionDetail('${escapedTag}')" style="color: #2777b9; text-decoration: none; font-weight: 600; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">#${tagname}</a>`;
+                lastIndex = j;
+                i = j - 1;
             } else {
-                spaceCount = 0;
+                result += '#';
+                lastIndex = i + 1;
             }
-            
-            // Stop jika ketemu karakter special yang bukan bagian tag
-            if (char === '<' || char === '>') {
-                break;
-            }
-            
-            tagText += char;
-            j++;
-        }
-        
-        tagText = tagText.trim();
-        
-        if (tagText) {
-            // Buat link berdasarkan symbol
-            if (symbol === '#') {
-                const escapedTag = tagText.replace(/'/g, "\\'");
-                result += `<a href="javascript:void(0)" onclick="showCompetitionDetail('${escapedTag}')" style="color: #2777b9; text-decoration: none; font-weight: 600; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">#${tagText}</a>`;
-            } else if (symbol === '@') {
-                // Mention: hanya text biasa, bukan link (no profile feature)
-                result += `<span style="color: #2777b9; font-weight: 600;">@${tagText}</span>`;
-            }
-            i = j;
-        } else {
-            // Jika tidak ada text setelah symbol, tambah symbol biasa
-            result += symbol;
-            i = nextSymbolIndex + 1;
         }
     }
+    
+    // Add remaining text
+    result += htmlContent.substring(lastIndex);
     
     return result;
 }
@@ -564,11 +596,17 @@ async function showCompetitionDetail(competitionName) {
             return;
         }
         
-        // Cari kompetisi yang cocok dengan nama (case-insensitive)
-        const comp = data.lowongan.find(c => 
-            c.nama.toLowerCase().includes(competitionName.toLowerCase()) ||
-            competitionName.toLowerCase().includes(c.nama.toLowerCase())
-        );
+        // Normalize hashtag untuk matching dengan nama kompetisi yang punya spasi
+        const hashtagNormalized = competitionName.toLowerCase().replace(/\s+/g, '');
+        
+        // Cari kompetisi yang cocok dengan nama (case-insensitive + support format tanpa spasi)
+        const comp = data.lowongan.find(c => {
+            const namaNormalized = c.nama.toLowerCase().replace(/\s+/g, '');
+            // Match either: exact match atau normalized match (untuk hashtag tanpa spasi)
+            return c.nama.toLowerCase().includes(competitionName.toLowerCase()) ||
+                   competitionName.toLowerCase().includes(c.nama.toLowerCase()) ||
+                   namaNormalized === hashtagNormalized;
+        });
         
         if (!comp) {
             alert(`Kompetisi "${competitionName}" tidak ditemukan`);
@@ -663,9 +701,6 @@ function createPostCard(post, token) {
                 commentEl.innerHTML = `
                     <div style="display: flex; justify-content: space-between;">
                         <strong style="font-size: 12px;">${comment.authorUsername}</strong>
-                        ${token && comment.author._id === getUserIdFromToken(token) ? `
-                            <button onclick="deleteComment('${post._id}', '${comment._id}')" style="background: none; border: none; color: #999; cursor: pointer; font-size: 12px;">×</button>
-                        ` : ''}
                     </div>
                     <p style="font-size: 13px; margin: 3px 0; color: #333;">${escapeHtml(comment.content)}</p>
                     <small style="color: #999; font-size: 11px;">${getTimeAgo(comment.createdAt)}</small>

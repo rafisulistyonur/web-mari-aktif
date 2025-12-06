@@ -7,7 +7,14 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     background: #f3f2ef;
-    overflow: hidden;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
 /* Tombol Admin Panel */
@@ -98,8 +105,12 @@ body {
 
 .container {
     display: flex;
+    width: 100vw;
     min-height: 100vh;
-    width: 100%;
+    margin: 0;
+    padding: 0;
+    padding-top: 70px;
+    box-sizing: border-box;
 }
 
 .left-panel {
@@ -108,9 +119,11 @@ body {
     border-right: 1px solid #ddd;
     overflow: hidden;
     transition: width 0.3s ease;
-    height: 100vh;
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: calc(100vh - 70px);
+    box-sizing: border-box;
 }
 
 .left-panel.shrink {
@@ -118,26 +131,27 @@ body {
 }
 
 .header {
-    padding: 16px;
+    padding: 12px 16px;
     border-bottom: 1px solid #ddd;
     background: white;
-    margin-top: 60px;
+    flex-shrink: 0;
 }
 
 .header h2 {
-    font-size: 20px;
-    margin-bottom: 4px;
+    font-size: 18px;
+    margin-bottom: 2px;
 }
 
 .header p {
     color: #666;
-    font-size: 14px;
+    font-size: 13px;
+    margin: 1px 0;
 }
 
 .results-count {
     color: #999;
-    font-size: 13px;
-    margin-top: 4px;
+    font-size: 12px;
+    margin-top: 2px;
 }
 
 .competition-list {
@@ -149,7 +163,7 @@ body {
 }
 
 .competition-card {
-    padding: 16px;
+    padding: 12px 16px;
     border-bottom: 1px solid #e0e0e0;
     cursor: pointer;
     position: relative;
@@ -169,32 +183,32 @@ body {
 
 .card-content {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: flex-start;
 }
 
 .logo {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
     flex-shrink: 0;
 }
 
 .card-info {
     flex: 1;
-    padding-right: 30px;
+    padding-right: 10px;
     min-width: 0;
 }
 
 .card-title {
     color: #0a66c2;
     font-weight: 600;
-    margin-bottom: 4px;
-    font-size: 15px;
+    margin-bottom: 2px;
+    font-size: 14px;
     word-break: break-word;
 }
 
@@ -205,25 +219,25 @@ body {
 .organizer {
     color: #333;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .location {
     color: #666;
-    font-size: 13px;
-    margin-top: 2px;
+    font-size: 12px;
+    margin-top: 1px;
 }
 
 .deadline {
     color: #666;
-    font-size: 13px;
-    margin-top: 8px;
+    font-size: 12px;
+    margin-top: 6px;
 }
 
 .status {
     color: #057642;
-    font-size: 13px;
-    margin-top: 8px;
+    font-size: 12px;
+    margin-top: 6px;
     font-weight: 500;
 }
 
@@ -232,7 +246,7 @@ body {
     gap: 8px;
     position: absolute;
     top: 10px;
-    right: 40px;
+    right: 10px;
     z-index: 10;
 }
 
@@ -290,9 +304,10 @@ body {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     transition: width 0.3s ease;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .right-panel.show {
@@ -309,7 +324,6 @@ body {
     top: 0;
     background: white;
     z-index: 10;
-    margin-top: 60px;
     flex-shrink: 0;
 }
 
@@ -498,34 +512,35 @@ body {
 }
 
 .filter-section {
-    padding: 16px;
+    padding: 12px 16px;
     border-bottom: 1px solid #ddd;
     background: white;
     position: sticky;
     top: 0;
     z-index: 9;
+    flex-shrink: 0;
 }
 
 .filter-section h3 {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     color: #333;
 }
 
 .filter-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
 }
 
 .filter-chip {
-    padding: 6px 16px;
+    padding: 5px 14px;
     border: 1px solid #666;
     border-radius: 20px;
     background: white;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: #333;
     transition: all 0.2s;
@@ -561,14 +576,17 @@ body {
 /* Responsive untuk mobile */
 @media (max-width: 768px) {
     body {
-        padding-top: 70px;
+        padding-top: 0;
+        overflow: auto;
     }
 
     .container {
         flex-direction: column;
+        width: 100%;
         min-height: auto;
-        padding-top: 0 !important;
-        padding-bottom: 20px !important;
+        padding-top: 70px;
+        margin: 0;
+        padding: 70px 0 0 0;
     }
     
     .admin-btn {
@@ -588,92 +606,144 @@ body {
     
     .left-panel {
         width: 100%;
-        max-height: auto;
         border-right: none;
-        border-bottom: 1px solid #ddd;
+        border-bottom: none;
+        min-height: auto;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
     
     .left-panel.shrink {
         width: 100%;
-        display: block;
-        border-bottom: 1px solid #ddd;
+        display: none;
+        border-right: none;
+        border-bottom: none;
+        min-height: auto;
+        overflow: hidden;
     }
     
     .header {
-        padding: 12px 16px;
+        padding: 10px 16px;
         top: 0;
         z-index: 10;
-        margin-top: 50px;
+        margin-top: 0;
+        flex-shrink: 0;
+        border-bottom: 1px solid #ddd;
     }
     
     .header h2 {
-        font-size: 18px;
-        margin-bottom: 2px;
+        font-size: 16px;
+        margin-bottom: 1px;
     }
     
     .header p {
-        font-size: 13px;
+        font-size: 12px;
+        margin: 1px 0;
     }
     
     .results-count {
-        font-size: 12px;
-        margin-top: 2px;
+        font-size: 11px;
+        margin-top: 1px;
     }
     
     .filter-section {
-        padding: 12px 16px;
+        padding: 10px 16px;
         top: 0;
         z-index: 9;
+        flex-shrink: 0;
+        border-bottom: 1px solid #ddd;
     }
     
     .filter-section h3 {
-        font-size: 13px;
-        margin-bottom: 10px;
+        font-size: 12px;
+        margin-bottom: 6px;
     }
     
     .filter-chips {
-        gap: 6px;
+        gap: 4px;
+        max-height: 60px;
+        overflow-y: auto;
+        padding-bottom: 2px;
     }
     
     .filter-chip {
-        padding: 5px 12px;
-        font-size: 12px;
+        padding: 4px 10px;
+        font-size: 11px;
+        flex-shrink: 0;
     }
     
     .competition-list {
-        max-height: auto;
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
     }
     
     .competition-card {
-        padding: 12px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e0e0e0;
     }
     
     .card-info {
-        padding-right: 20px;
+        padding-right: 15px;
     }
     
     .card-title {
-        font-size: 14px;
+        font-size: 13px;
+        margin-bottom: 1px;
     }
     
     .organizer {
-        font-size: 13px;
+        font-size: 12px;
     }
     
-    .location,
+    .location {
+        font-size: 11px;
+        margin-top: 1px;
+    }
+    
     .deadline,
     .status {
-        font-size: 12px;
+        font-size: 11px;
+        margin-top: 4px;
     }
     
     .right-panel {
         width: 100%;
-        max-height: auto;
+        max-height: 45vh;
         border-top: 1px solid #ddd;
+        overflow: hidden;
+        display: none;
+        flex-direction: column;
     }
     
     .right-panel.show {
         width: 100%;
+        max-height: 100vh;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1001;
+        background: white;
+        animation: slideFromRight 0.3s ease-out;
+    }
+    
+    @keyframes slideFromRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
     
     .detail-header {
@@ -681,36 +751,68 @@ body {
         top: 0;
         position: sticky;
         z-index: 10;
-        margin-top: 50px;
+        margin-top: 0;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    #closeDetailBtn {
+        display: flex !important;
+        font-size: 24px;
+        color: #333;
+        padding: 8px;
+        min-width: 40px;
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    #closeDetailBtn:hover {
+        background-color: #f0f0f0;
     }
     
     .detail-content {
-        padding: 16px;
-        padding-bottom: 80px;
+        padding: 12px 16px;
+        padding-bottom: 20px;
+        overflow-y: auto;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
     }
     
     .detail-title {
-        font-size: 20px;
-        margin-bottom: 12px;
+        font-size: 16px;
+        margin-bottom: 6px;
+        font-weight: 600;
     }
     
     .detail-meta {
         font-size: 12px;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
+        color: #666;
     }
     
     .action-buttons {
-        gap: 8px;
-        margin: 16px 0;
+        gap: 6px;
+        margin: 10px 0;
         flex-wrap: wrap;
+        display: flex;
     }
     
     .btn {
-        padding: 10px 16px;
-        font-size: 13px;
+        padding: 8px 12px;
+        font-size: 11px;
         flex: 1;
-        min-width: 120px;
+        min-width: 100px;
+        border-radius: 16px;
     }
     
     .logo {
@@ -720,65 +822,67 @@ body {
     }
     
     .about-section {
-        margin: 16px 0;
+        margin: 10px 0;
     }
     
     .about-section h3 {
-        font-size: 16px;
-        margin-bottom: 12px;
+        font-size: 14px;
+        margin-bottom: 8px;
+        font-weight: 600;
     }
     
     .about-section p {
-        font-size: 13px;
+        font-size: 12px;
         line-height: 1.5;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     
     .recruiter-box {
         padding: 12px;
-        margin: 16px 0;
+        margin: 12px 0;
     }
     
     .recruiter-box h3 {
-        font-size: 14px;
-        margin-bottom: 12px;
+        font-size: 13px;
+        margin-bottom: 10px;
     }
     
     .recruiter-info {
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }
     
     .recruiter-avatar {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
     }
     
     .recruiter-details h4 {
-        font-size: 14px;
+        font-size: 13px;
     }
     
     .recruiter-details p {
-        font-size: 12px;
+        font-size: 11px;
     }
     
     .premium-banner {
-        padding: 12px;
-        margin: 16px 0;
+        padding: 10px 12px;
+        margin: 12px 0;
     }
     
     .premium-banner h3 {
-        font-size: 14px;
+        font-size: 13px;
         margin-bottom: 6px;
     }
     
     .premium-banner p {
-        font-size: 12px;
-        margin-bottom: 8px;
+        font-size: 11px;
+        margin-bottom: 6px;
     }
     
     .icon-btn {
-        padding: 4px;
+        padding: 6px;
+        font-size: 16px;
     }
 }
 
@@ -854,12 +958,12 @@ body {
 /* Status Badge Styling */
 .status-badge {
     display: inline-block;
-    padding: 6px 12px;
+    padding: 4px 10px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .status-badge.aktif {

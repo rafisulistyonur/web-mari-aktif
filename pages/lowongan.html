@@ -2,11 +2,16 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2777b9">
+    <title>Daftar Lomba</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/public/utama.css">
-    <title>Daftar Lomba</title>
     <link rel="stylesheet" href="/public/lowongan.css">
+    <link rel="stylesheet" href="/public/responsive.css">
+    <link rel="stylesheet" href="/public/responsive-animations.css">
 </head>
 <body>
     <komponen navbar></komponen>
@@ -34,7 +39,7 @@
             <div class="header">
                 <h2>Membuka lomba di jaringan Anda</h2>
                 <p>Lomba yang dipromosikan oleh orang-orang di jaringan Anda</p>
-                <p class="results-count" id="resultsCount">5 hasil</p>
+                <p class="results-count" id="resultsCount"></p>
             </div>
 
             <!-- Filter Section -->
@@ -60,6 +65,7 @@
                 <div>
                     <button class="icon-btn">↗</button>
                     <button class="icon-btn">⋯</button>
+                    <button class="close-btn" onclick="closeDetailPanel()" id="closeDetailBtn" style="display: none;">✕</button>
                 </div>
             </div>
 
@@ -132,6 +138,7 @@
     <script src="/public/protected-page.js"></script>
     <script src="/public/categoryConfig.js"></script>
     <script src="/public/lowongan.js"></script>
+    <script src="/public/responsive-scaler.js"></script>
     <script src="/public/notification.js"></script>
 </body>
 </html>
